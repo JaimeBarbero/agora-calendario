@@ -248,6 +248,17 @@ async function initApp(){
   document.getElementById("btn-connect").textContent="✅ Sheets conectado";
   document.getElementById("btn-connect").className="btn btn-success";
   document.getElementById("btn-sync").style.display="inline-block";
+
+  // Delegación de eventos para la tabla
+  document.getElementById("tbody").addEventListener("click",function(e){
+    const editBtn=e.target.closest(".editbtn");
+    const delBtn=e.target.closest(".delbtn");
+    const estadoBtn=e.target.closest(".ebadge");
+    if(editBtn) openEditModal(parseInt(editBtn.dataset.id));
+    if(delBtn)  deleteRow(parseInt(delBtn.dataset.id));
+    if(estadoBtn) cycleEstado(parseInt(estadoBtn.dataset.id));
+  });
+
   render();
   notify("📋 Datos locales cargados · pulsa Sync para actualizar desde Sheets");
 }
