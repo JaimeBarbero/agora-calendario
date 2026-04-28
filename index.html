@@ -69,6 +69,7 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
     <div class="hbtns">
       <span class="sync-msg" id="sync-msg"></span>
       <button class="btn" id="btn-sync" style="display:none" onclick="pullFromSheets()">↻ Sync</button>
+      <button class="btn" onclick="toggleModal()">+ Nueva entrada</button>
       <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Google Sheets</button>
     </div>
   </div>
@@ -82,6 +83,48 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
     </ol>
     <button class="btn btn-primary" id="btn-do-connect" onclick="doConnect()">Conectar</button>
     <div class="err" id="connect-err"></div>
+  </div>
+
+  <!-- Modal nueva entrada -->
+  <div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:14px;padding:28px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:18px">Nueva entrada</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">FECHA</label>
+          <input id="nw-fecha" placeholder="ej: 15/05" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit"/>
+        </div>
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">DÍA</label>
+          <input id="nw-dia" placeholder="ej: Lun" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit"/>
+        </div>
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">RED SOCIAL</label>
+          <select id="nw-red" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit">
+            <option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">TIPO</label>
+          <input id="nw-tipo" placeholder="ej: Reel · Backstage" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit"/>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">COPY</label>
+        <textarea id="nw-copy" rows="4" placeholder="Escribe el copy aquí..." style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+      </div>
+      <div style="margin-bottom:18px">
+        <label style="font-size:11px;color:#888;display:block;margin-bottom:4px">ESTADO</label>
+        <select id="nw-estado" style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit">
+          <option>Borrador</option><option>Listo</option><option>Publicado</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="addRow()">Guardar entrada</button>
+        <button class="btn" onclick="toggleModal()">Cancelar</button>
+      </div>
+      <div class="err" id="modal-err"></div>
+    </div>
   </div>
 
   <div class="filters" id="filter-red"></div>
@@ -178,6 +221,7 @@ function render(){
         <div class="tipo">${r.tipo}</div>
         <div class="cprev${isExp?" exp":""}">${r.copy.replace(/</g,"&lt;")}</div>
         <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="event.stopPropagation();cycleEstado(${r.id})">${r.estado}</span>
+        <span onclick="event.stopPropagation();deleteRow(${r.id})" title="Eliminar" style="cursor:pointer;color:#ccc;font-size:16px;padding:0 4px;line-height:1" onmouseover="this.style.color='#e53e3e'" onmouseout="this.style.color='#ccc'">✕</span>
       </div>
       ${isExp?`<div class="rexp">
         <div class="elabel">Copy completo</div>
