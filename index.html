@@ -238,9 +238,11 @@ function login(){
   }
 }
 
+function normalizeRows(r){return r.map(x=>({...x,id:parseInt(x.id)}));}
+
 function start(){
   const s=localStorage.getItem("agora-cal");
-  rows=s?JSON.parse(s):[...DATA];
+  rows=s?normalizeRows(JSON.parse(s)):normalizeRows([...DATA]);
   connected=true;
   document.getElementById("btn-connect").textContent="✅ Sheets conectado";
   document.getElementById("btn-connect").className="btn btn-success";
@@ -352,7 +354,7 @@ async function syncSheets(){
   document.getElementById("btn-sync").textContent="Sincronizando…";
   try{
     const res=await fetch(PROXY);const d=await res.json();
-    if(d.ok&&d.rows&&d.rows.length){rows=d.rows;save();render();notify("✅ Sincronizado con Sheets");}
+    if(d.ok&&d.rows&&d.rows.length){rows=normalizeRows(d.rows);save();render();notify("✅ Sincronizado con Sheets");}
     else notify("⚠️ Sin datos en Sheets");
   }catch(e){notify("❌ Error: "+e.message);}
   document.getElementById("btn-sync").textContent="↻ Sync";
@@ -368,7 +370,7 @@ async function doConnect(){
     document.getElementById("btn-connect").textContent="✅ Sheets conectado";
     document.getElementById("btn-connect").className="btn btn-success";
     document.getElementById("btn-sync").style.display="inline-block";
-    if(d.ok&&d.rows&&d.rows.length){rows=d.rows;save();render();notify("✅ Conectado");}
+    if(d.ok&&d.rows&&d.rows.length){rows=normalizeRows(d.rows);save();render();notify("✅ Conectado");}
     else{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"seed",rows})});notify("✅ Datos volcados a Sheets");}
   }catch(e){err.textContent="Error: "+e.message;}
 }
