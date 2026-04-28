@@ -320,16 +320,16 @@ function saveEdit(){
   r.fecha=fecha;r.dia=document.getElementById("ed-dia").value.trim();
   r.red=document.getElementById("ed-red").value;r.tipo=tipo;r.copy=copy;
   r.estado=document.getElementById("ed-estado").value;
-  addLog("editó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);
   rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
   save();hideModal("edit-modal");render();if(connected)push(r);
+  try{addLog("editó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);}catch(e){}
 }
 
 function delRow(id){
   if(!confirm("¿Eliminar esta entrada?"))return;
   const r=rows.find(x=>x.id===id);
-  if(r) addLog("eliminó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);
-  rows=rows.filter(r=>r.id!==id);save();render();
+  rows=rows.filter(x=>x.id!==id);save();render();
+  try{if(r)addLog("eliminó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);}catch(e){}
   if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
 }
 
@@ -339,9 +339,9 @@ function addRow(){
   const copy=document.getElementById("nw-copy").value.trim();
   if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
   const nr={id:Date.now(),fecha,dia:document.getElementById("nw-dia").value.trim(),red:document.getElementById("nw-red").value,tipo,copy,estado:document.getElementById("nw-estado").value};
-  addLog("añadió",`"${nr.fecha} · ${nr.red} · ${nr.tipo}"`);
   rows.push(nr);rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
   save();hideModal("new-modal");render();if(connected)push(nr);
+  try{addLog("añadió",`"${nr.fecha} · ${nr.red} · ${nr.tipo}"`);}catch(e){}
   ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(id=>document.getElementById(id).value="");
 }
 
