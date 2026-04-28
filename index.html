@@ -7,7 +7,6 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f5;color:#111;min-height:100vh}
-/* Login */
 #login-screen{position:fixed;inset:0;background:#f5f5f5;z-index:999;display:flex;align-items:center;justify-content:center}
 .login-box{background:#fff;border-radius:16px;padding:40px;width:360px;max-width:90vw;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center}
 .login-box h2{font-size:18px;font-weight:600;margin-bottom:6px}
@@ -17,7 +16,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 #pwd-err{font-size:12px;color:red;min-height:18px;margin-bottom:10px}
 #pwd-btn{width:100%;padding:10px;background:#111;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer}
 #pwd-btn:hover{background:#333}
-/* App */
 #app{display:none}
 .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
 .header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px}
@@ -37,11 +35,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .fbtn{font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid #e0e0e0;background:transparent;color:#555;cursor:pointer;font-family:inherit}
 .fbtn.on{background:#111;color:#fff;border-color:#111}
 .table{border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;background:#fff}
-.thead{display:grid;grid-template-columns:80px 130px 165px 1fr 115px 30px;padding:10px 16px;gap:12px;background:#f5f5f5;border-bottom:1px solid #e5e5e5}
+.thead{display:grid;grid-template-columns:80px 130px 165px 1fr 115px 70px;padding:10px 16px;gap:12px;background:#f5f5f5;border-bottom:1px solid #e5e5e5}
 .thead span{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em}
 .row{border-bottom:1px solid #f0f0f0}
 .row:last-child{border-bottom:none}
-.rmain{display:grid;grid-template-columns:80px 130px 165px 1fr 115px 30px;padding:12px 16px;gap:12px;align-items:start;cursor:pointer}
+.rmain{display:grid;grid-template-columns:80px 130px 165px 1fr 115px 70px;padding:12px 16px;gap:12px;align-items:center}
 .rmain:hover{background:#fafafa}
 .fd{font-size:13px;font-weight:500}
 .fw{font-size:11px;color:#aaa}
@@ -50,29 +48,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .rcell{display:flex;align-items:center;gap:6px}
 .tipo{font-size:12px;color:#333}
 .cprev{font-size:12px;color:#555;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cprev.exp{display:block;-webkit-line-clamp:unset}
 .ebadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;user-select:none;display:inline-block;white-space:nowrap}
-.delbtn{color:#ccc;font-size:15px;cursor:pointer;background:none;border:none;padding:2px 4px;font-family:inherit}
+.row-actions{display:flex;gap:6px;align-items:center}
+.editbtn{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#555;font-family:inherit}
+.editbtn:hover{background:#f5f5f5}
+.delbtn{color:#ccc;font-size:14px;cursor:pointer;background:none;border:none;padding:2px 4px;font-family:inherit;line-height:1}
 .delbtn:hover{color:#e53e3e}
-.rexp{padding:0 16px 16px;border-top:1px solid #f0f0f0}
-.elabel{font-size:11px;color:#aaa;margin:10px 0 6px}
-.cfull{font-size:13px;color:#222;line-height:1.7;white-space:pre-line;flex:1}
-.crow{display:flex;gap:10px;align-items:flex-start}
-textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;color:#222;background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:8px 10px;resize:vertical}
-.ebtns{display:flex;gap:8px;margin-top:6px}
 .empty{padding:40px;text-align:center;font-size:13px;color:#aaa}
 .footer{margin-top:10px;font-size:11px;color:#bbb}
-/* Modal */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:28px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal{background:#fff;border-radius:14px;padding:28px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto}
 .modal h3{font-size:15px;font-weight:600;margin-bottom:18px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-group.full{grid-column:1/-1}
 .form-group label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em}
 .form-group input,.form-group select,.form-group textarea{padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#111}
-.form-group textarea{resize:vertical;min-height:90px}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#111}
+.form-group textarea{resize:vertical;min-height:100px}
 .modal-btns{display:flex;gap:8px;margin-top:18px}
 </style>
 </head>
@@ -92,6 +86,7 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
 <!-- APP -->
 <div id="app">
 <div class="wrap">
+
   <div class="header">
     <div>
       <h1 style="font-size:20px;font-weight:600">Calendario de contenidos <span style="font-size:13px;color:#888;font-weight:400">· Ágora News · Mayo 2026</span></h1>
@@ -105,7 +100,7 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
     <div class="hbtns">
       <span class="sync-msg" id="sync-msg"></span>
       <button class="btn" id="btn-sync" style="display:none" onclick="pullFromSheets()">↻ Sync</button>
-      <button class="btn" onclick="openModal()">+ Nueva entrada</button>
+      <button class="btn" onclick="openNewModal()">+ Nueva entrada</button>
       <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Google Sheets</button>
     </div>
   </div>
@@ -121,8 +116,8 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
     <div class="err" id="connect-err"></div>
   </div>
 
-  <!-- Modal -->
-  <div class="overlay" id="modal-overlay">
+  <!-- Modal nueva entrada -->
+  <div class="overlay" id="new-overlay">
     <div class="modal">
       <h3>Nueva entrada</h3>
       <div class="form-grid">
@@ -137,10 +132,34 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
           <select id="nw-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select>
         </div>
       </div>
-      <div class="err" id="modal-err"></div>
+      <div class="err" id="new-err"></div>
       <div class="modal-btns">
         <button class="btn btn-primary" onclick="addRow()">Guardar entrada</button>
-        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn" onclick="closeNewModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal editar entrada -->
+  <div class="overlay" id="edit-overlay">
+    <div class="modal">
+      <h3>Editar entrada</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Fecha</label><input id="ed-fecha" placeholder="ej: 15/05"/></div>
+        <div class="form-group"><label>Día</label><input id="ed-dia" placeholder="ej: Lun"/></div>
+        <div class="form-group"><label>Red social</label>
+          <select id="ed-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select>
+        </div>
+        <div class="form-group"><label>Tipo</label><input id="ed-tipo"/></div>
+        <div class="form-group full"><label>Copy</label><textarea id="ed-copy" rows="5"></textarea></div>
+        <div class="form-group"><label>Estado</label>
+          <select id="ed-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select>
+        </div>
+      </div>
+      <div class="err" id="edit-err"></div>
+      <div class="modal-btns">
+        <button class="btn btn-primary" onclick="saveEdit()">Guardar cambios</button>
+        <button class="btn" onclick="closeEditModal()">Cancelar</button>
       </div>
     </div>
   </div>
@@ -150,11 +169,11 @@ textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;col
 
   <div class="table">
     <div class="thead">
-      <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy propuesto</span><span>Estado</span><span></span>
+      <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy propuesto</span><span>Estado</span><span>Acciones</span>
     </div>
     <div id="tbody"></div>
   </div>
-  <p class="footer">Clic en fila para expandir · Clic en estado para cambiarlo</p>
+  <p class="footer">Clic en estado para cambiarlo · Clic en ✏️ para editar · Clic en ✕ para eliminar</p>
 </div>
 </div>
 
@@ -197,9 +216,9 @@ const INITIAL_DATA=[
   {id:20, fecha:"30/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Cierre mes",            copy:"MAYO 2026 ✅ Un mes, muchas producciones. Nos vemos en junio con más eventos. 🎬 #AgoraNEws #Recap",estado:"Borrador"},
 ];
 
-let rows=[], connected=false, expandedId=null, editingId=null, filterRed="Todas", filterSem="Todas";
+let rows=[], connected=false, filterRed="Todas", filterSem="Todas", editingId=null;
 
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function notify(m,ms=3000){const el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(()=>el.textContent="",ms);}}
 function save(){localStorage.setItem("agora-calendario",JSON.stringify(rows));}
 function semana(f){const d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
@@ -216,7 +235,7 @@ function checkPwd(){
   } else {
     err.textContent="Contraseña incorrecta";
     input.value="";
-    setTimeout(()=>{err.textContent="";},2500);
+    setTimeout(()=>err.textContent="",2500);
   }
 }
 
@@ -225,7 +244,6 @@ async function initApp(){
   const saved=localStorage.getItem("agora-calendario");
   if(saved){try{rows=JSON.parse(saved);}catch(e){rows=[...INITIAL_DATA];}}
   else{rows=[...INITIAL_DATA];}
-  // Marcar como conectado sin llamar a Sheets al arrancar
   connected=true;
   document.getElementById("btn-connect").textContent="✅ Sheets conectado";
   document.getElementById("btn-connect").className="btn btn-success";
@@ -234,11 +252,11 @@ async function initApp(){
   notify("📋 Datos locales cargados · pulsa Sync para actualizar desde Sheets");
 }
 
+// RENDER
 function buildFilters(){
   document.getElementById("filter-red").innerHTML=REDES.map(r=>`<button class="fbtn${r===filterRed?" on":""}" onclick="filterRed='${r}';render()">${r}</button>`).join("");
-  document.getElementById("filter-sem").innerHTML=SEMANAS.map(s=>`<button class="fbtn${s===filterSem?" on":""}" onclick="filterSem='${s.replace(/'/g,"\\'")}';render()">${s}</button>`).join("");
+  document.getElementById("filter-sem").innerHTML=SEMANAS.map(s=>`<button class="fbtn${s===filterSem?" on":""}" onclick="filterSem=this.dataset.v;render()" data-v="${s}">${s}</button>`).join("");
 }
-
 function updateStats(){
   const t=rows.length,p=rows.filter(r=>r.estado==="Publicado").length,l=rows.filter(r=>r.estado==="Listo").length,b=rows.filter(r=>r.estado==="Borrador").length;
   document.getElementById("s-total").textContent=t+" entradas";
@@ -246,7 +264,6 @@ function updateStats(){
   document.getElementById("s-list").textContent=l+" listas";
   document.getElementById("s-bor").textContent=b+" borradores";
 }
-
 function render(){
   buildFilters(); updateStats();
   const filtered=rows.filter(r=>(filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem));
@@ -256,60 +273,34 @@ function render(){
   tb.innerHTML=filtered.map(r=>{
     const rc=RC[r.red]||{color:"#888",bg:"#eee",icon:"?"};
     const ec=EC[r.estado]||EC.Borrador;
-    const isExp=expandedId===r.id, isEdit=editingId===r.id;
     return`<div class="row">
-      <div class="rmain" onclick="toggleRow(${r.id})">
+      <div class="rmain">
         <div><div class="fd">${r.fecha}</div><div class="fw">${r.dia}</div></div>
         <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
         <div class="tipo">${esc(r.tipo)}</div>
-        <div class="cprev${isExp?" exp":""}">${esc(r.copy)}</div>
-        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="event.stopPropagation();cycleEstado(${r.id})">${r.estado}</span>
-        <button class="delbtn" onclick="event.stopPropagation();deleteRow(${r.id})" title="Eliminar">✕</button>
-      </div>
-      ${isExp?`<div class="rexp">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div>
-            <div class="elabel">Fecha</div>
-            <div style="font-size:13px;color:#222;font-weight:500">${r.fecha} · ${r.dia}</div>
-          </div>
-          <div>
-            <div class="elabel">Red social</div>
-            <div style="font-size:13px;color:#222">${r.red}</div>
-          </div>
-          <div>
-            <div class="elabel">Tipo de contenido</div>
-            <div style="font-size:13px;color:#222">${esc(r.tipo)}</div>
-          </div>
-          <div>
-            <div class="elabel">Estado</div>
-            <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border};cursor:pointer" onclick="cycleEstado(${r.id})">${r.estado} <span style="opacity:.5;font-size:10px">← clic para cambiar</span></span>
-          </div>
+        <div class="cprev">${esc(r.copy)}</div>
+        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="cycleEstado(${r.id})" title="Clic para cambiar estado">${r.estado}</span>
+        <div class="row-actions">
+          <button class="editbtn" onclick="openEditModal(${r.id})" title="Editar">✏️</button>
+          <button class="delbtn" onclick="deleteRow(${r.id})" title="Eliminar">✕</button>
         </div>
-        <div class="elabel">Copy completo</div>
-        ${isEdit?`
-          <textarea class="cedit" id="ta-${r.id}">${esc(r.copy)}</textarea>
-          <div class="ebtns">
-            <button class="btn btn-primary" onclick="saveCopy(${r.id})">Guardar${connected?" + Sync":""}</button>
-            <button class="btn" onclick="cancelEdit()">Cancelar</button>
-          </div>`:`
-          <div style="background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:14px;margin-bottom:10px">
-            <p style="font-size:13px;color:#222;line-height:1.7;white-space:pre-line;margin:0">${esc(r.copy)}</p>
-          </div>
-          <button class="btn" onclick="startEdit(${r.id})">✏️ Editar copy</button>`}
-      </div>`:""}
+      </div>
     </div>`;
   }).join("");
 }
 
-function toggleRow(id){id=parseInt(id);expandedId=expandedId===id?null:id;editingId=null;render();}
-function startEdit(id){id=parseInt(id);editingId=id;render();setTimeout(()=>{const t=document.getElementById("ta-"+id);if(t)t.focus();},50);}
-function cancelEdit(){editingId=null;render();}
-function cycleEstado(id){id=parseInt(id);const r=rows.find(x=>x.id===id);if(!r)return;r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];save();render();if(connected)pushRow(r);}
-function saveCopy(id){id=parseInt(id);const ta=document.getElementById("ta-"+id);if(!ta)return;const r=rows.find(x=>x.id===id);if(!r)return;r.copy=ta.value;editingId=null;save();render();if(connected)pushRow(r);}
+// ESTADO
+function cycleEstado(id){
+  id=parseInt(id);
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];
+  save();render();if(connected)pushRow(r);
+}
 
-function openModal(){document.getElementById("modal-overlay").classList.add("open");document.getElementById("modal-err").textContent="";}
-function closeModal(){
-  document.getElementById("modal-overlay").classList.remove("open");
+// MODAL NUEVA ENTRADA
+function openNewModal(){document.getElementById("new-overlay").classList.add("open");document.getElementById("new-err").textContent="";}
+function closeNewModal(){
+  document.getElementById("new-overlay").classList.remove("open");
   ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
 }
 function addRow(){
@@ -319,18 +310,58 @@ function addRow(){
   const tipo=document.getElementById("nw-tipo").value.trim();
   const copy=document.getElementById("nw-copy").value.trim();
   const estado=document.getElementById("nw-estado").value;
-  if(!fecha||!tipo||!copy){document.getElementById("modal-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
+  if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
   const nr={id:Date.now(),fecha,dia,red,tipo,copy,estado};
   rows.push(nr);rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();closeModal();render();if(connected)pushRow(nr);
+  save();closeNewModal();render();if(connected)pushRow(nr);
 }
+
+// MODAL EDITAR ENTRADA
+function openEditModal(id){
+  id=parseInt(id);
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  editingId=id;
+  document.getElementById("ed-fecha").value=r.fecha;
+  document.getElementById("ed-dia").value=r.dia;
+  document.getElementById("ed-red").value=r.red;
+  document.getElementById("ed-tipo").value=r.tipo;
+  document.getElementById("ed-copy").value=r.copy;
+  document.getElementById("ed-estado").value=r.estado;
+  document.getElementById("edit-err").textContent="";
+  document.getElementById("edit-overlay").classList.add("open");
+}
+function closeEditModal(){
+  document.getElementById("edit-overlay").classList.remove("open");
+  editingId=null;
+}
+function saveEdit(){
+  if(!editingId)return;
+  const r=rows.find(x=>x.id===editingId);if(!r)return;
+  const fecha=document.getElementById("ed-fecha").value.trim();
+  const tipo=document.getElementById("ed-tipo").value.trim();
+  const copy=document.getElementById("ed-copy").value.trim();
+  if(!fecha||!tipo||!copy){document.getElementById("edit-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
+  r.fecha=fecha;
+  r.dia=document.getElementById("ed-dia").value.trim();
+  r.red=document.getElementById("ed-red").value;
+  r.tipo=tipo;
+  r.copy=copy;
+  r.estado=document.getElementById("ed-estado").value;
+  rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  save();closeEditModal();render();
+  if(connected)pushRow(r);
+}
+
+// ELIMINAR
 function deleteRow(id){
+  id=parseInt(id);
   if(!confirm("¿Eliminar esta entrada?"))return;
-  rows=rows.filter(r=>r.id!=id);
-  if(expandedId===id)expandedId=null;
+  rows=rows.filter(r=>r.id!==id);
   save();render();
   if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado de Sheets")).catch(()=>notify("⚠️ Eliminado solo en local"));
 }
+
+// SHEETS
 async function pushRow(row){
   try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upsert",row})});notify("☁️ Guardado en Sheets");}
   catch{notify("⚠️ Guardado solo en local");}
