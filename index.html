@@ -301,20 +301,11 @@ function render(){
   }).join("");
 }
 
-function toggleRow(id){expandedId=expandedId===id?null:id;editingId=null;render();}
-function startEdit(id){editingId=id;render();setTimeout(()=>{const t=document.getElementById("ta-"+id);if(t)t.focus();},50);}
+function toggleRow(id){id=parseInt(id);expandedId=expandedId===id?null:id;editingId=null;render();}
+function startEdit(id){id=parseInt(id);editingId=id;render();setTimeout(()=>{const t=document.getElementById("ta-"+id);if(t)t.focus();},50);}
 function cancelEdit(){editingId=null;render();}
-
-function cycleEstado(id){
-  const r=rows.find(x=>x.id===id);if(!r)return;
-  r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];
-  save();render();if(connected)pushRow(r);
-}
-function saveCopy(id){
-  const ta=document.getElementById("ta-"+id);if(!ta)return;
-  const r=rows.find(x=>x.id===id);if(!r)return;
-  r.copy=ta.value;editingId=null;save();render();if(connected)pushRow(r);
-}
+function cycleEstado(id){id=parseInt(id);const r=rows.find(x=>x.id===id);if(!r)return;r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];save();render();if(connected)pushRow(r);}
+function saveCopy(id){id=parseInt(id);const ta=document.getElementById("ta-"+id);if(!ta)return;const r=rows.find(x=>x.id===id);if(!r)return;r.copy=ta.value;editingId=null;save();render();if(connected)pushRow(r);}
 
 function openModal(){document.getElementById("modal-overlay").classList.add("open");document.getElementById("modal-err").textContent="";}
 function closeModal(){
