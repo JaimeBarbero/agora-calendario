@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendario Contenidos — Ágora News</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f9f9; color: #111; min-height: 100vh; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header .sub { font-size: 13px; color: #666; margin-top: 3px; }
+    .stats { display: flex; gap: 18px; margin-top: 6px; flex-wrap: wrap; }
+    .stats span { font-size: 12px; font-weight: 500; }
+
+    /* Botones header */
+    .hbtns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn { font-size: 12px; padding: 6px 14px; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-family: inherit; }
+    .btn-primary { background: #111; color: #fff; border-color: #111; }
+    .btn-success { background: #EDFAF3; color: #166534; border-color: #6EE7B7; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .sync-msg { font-size: 12px; color: #555; }
+
+    /* Setup panel */
+    .setup { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .setup h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+    .setup ol { padding-left: 18px; font-size: 13px; color: #555; line-height: 2.2; margin-bottom: 16px; }
+    .setup .err { font-size: 12px; color: red; margin-top: 6px; }
+
+    /* Filtros */
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filters .sep { width: 1px; background: #e0e0e0; margin: 0 4px; }
+    .filter-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid #e0e0e0; background: transparent; color: #555; cursor: pointer; font-family: inherit; }
+    .filter-btn.active { background: #111; color: #fff; border-color: #111; }
+
+    /* Tabla */
+    .table { border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden; background: #fff; }
+    .table-head { display: grid; grid-template-columns: 80px 130px 165px 1fr 115px; padding: 10px 16px; gap: 12px; background: #f5f5f5; border-bottom: 1px solid #e5e5e5; }
+    .table-head span { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
+    .row { border-bottom: 1px solid #f0f0f0; }
+    .row:last-child { border-bottom: none; }
+    .row-main { display: grid; grid-template-columns: 80px 130px 165px 1fr 115px; padding: 12px 16px; gap: 12px; align-items: start; cursor: pointer; }
+    .row-main:hover { background: #fafafa; }
+    .fecha-d { font-size: 13px; font-weight: 500; }
+    .fecha-w { font-size: 11px; color: #aaa; }
+    .red-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 6px; border: 1px solid; display: inline-block; }
+    .red-name { font-size: 12px; color: #666; }
+    .red-cell { display: flex; align-items: center; gap: 6px; }
+    .tipo-cell { font-size: 12px; color: #333; }
+    .copy-preview { font-size: 12px; color: #555; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .copy-preview.expanded { display: block; -webkit-line-clamp: unset; }
+    .estado-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid; cursor: pointer; user-select: none; display: inline-block; white-space: nowrap; }
+
+    /* Expanded */
+    .row-expanded { padding: 0 16px 16px; border-top: 1px solid #f0f0f0; }
+    .exp-label { font-size: 11px; color: #aaa; margin: 10px 0 6px; }
+    .copy-full { font-size: 13px; color: #222; line-height: 1.7; white-space: pre-line; flex: 1; }
+    .copy-row { display: flex; gap: 10px; align-items: flex-start; }
+    textarea.copy-edit { width: 100%; min-height: 90px; font-size: 13px; font-family: inherit; color: #222; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 8px 10px; resize: vertical; }
+    .edit-btns { display: flex; gap: 8px; margin-top: 6px; }
+
+    .empty { padding: 40px; text-align: center; font-size: 13px; color: #aaa; }
+    .footer { margin-top: 10px; font-size: 11px; color: #bbb; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>Calendario de contenidos <span style="font-weight:400;font-size:14px;color:#888">· Ágora News · Mayo 2025</span></h1>
+      <div class="stats">
+        <span id="s-total" style="color:#888"></span>
+        <span id="s-pub"   style="color:#166534"></span>
+        <span id="s-list"  style="color:#1A56B0"></span>
+        <span id="s-bor"   style="color:#92600A"></span>
+      </div>
+    </div>
+    <div class="hbtns">
+      <span class="sync-msg" id="sync-msg"></span>
+      <button class="btn" id="btn-sync" style="display:none" onclick="pullFromSheets()">↻ Sync</button>
+      <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Google Sheets</button>
+    </div>
+  </div>
+
+  <!-- Setup -->
+  <div class="setup" id="setup-panel" style="display:none">
+    <h3>Conectar con Google Sheets</h3>
+    <ol>
+      <li>Asegúrate de que el workflow de <strong>Pipedream</strong> está en estado <strong>Active</strong>.</li>
+      <li>Asegúrate de haber ejecutado <strong>cargarDatosIniciales()</strong> en Apps Script.</li>
+      <li>Pulsa <strong>Conectar</strong> para sincronizar.</li>
+    </ol>
+    <button class="btn btn-primary" id="btn-do-connect" onclick="doConnect()">Conectar</button>
+    <div class="err" id="connect-err"></div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters" id="filter-red"></div>
+  <div class="filters" id="filter-sem"></div>
+
+  <!-- Tabla -->
+  <div class="table">
+    <div class="table-head">
+      <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy propuesto</span><span>Estado</span>
+    </div>
+    <div id="tbody"></div>
+  </div>
+  <div class="footer" id="footer-note">Haz clic en una fila para expandir el copy · Haz clic en el estado para cambiarlo</div>
+</div>
+
+<script>
+const PROXY = "https://eoquttk4j3kxens.m.pipedream.net";
+
+const ESTADOS = ["Borrador", "Listo", "Publicado"];
+const ESTADO_CFG = {
+  Borrador:  { bg:"#FEF9EC", color:"#92600A", border:"#F5D97A" },
+  Listo:     { bg:"#EBF3FF", color:"#1A56B0", border:"#93C5FD" },
+  Publicado: { bg:"#EDFAF3", color:"#166534", border:"#6EE7B7" },
+};
+const RED_CFG = {
+  Instagram:     { color:"#C13584", bg:"#FDF2F8", icon:"IG" },
+  LinkedIn:      { color:"#0077B5", bg:"#EBF5FB", icon:"LI" },
+  "X (Twitter)": { color:"#1A1A1A", bg:"#F3F4F6", icon:"X"  },
+};
+const REDES   = ["Todas","Instagram","LinkedIn","X (Twitter)"];
+const SEMANAS = ["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
+
+const INITIAL_DATA = [
+  {id:1,  fecha:"01/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Backstage",            copy:"Así montamos el escenario antes de que llegue el primer invitado. 30 segundos de puro backstage que no suelen ver. 🎬 #AgoraNEws #RealizacionEventos",estado:"Borrador"},
+  {id:2,  fecha:"02/05",dia:"Vie",red:"LinkedIn",    tipo:"Post · Antes/Después",         copy:"Antes: un espacio vacío. Después: un evento corporativo para 300 personas. Te mostramos el proceso técnico detrás de cada producción. ¿Cuánto tarda realmente el montaje? 👇",estado:"Borrador"},
+  {id:3,  fecha:"05/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tip técnico",          copy:"🎙️ Tip de la semana: si el audio en streaming suena hueco, revisa el gain staging antes del encoder. Un ajuste de 3dB puede cambiar la experiencia del espectador. #StreamingPro",estado:"Borrador"},
+  {id:4,  fecha:"07/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Tips",              copy:"3 errores de iluminación que arruinan un evento (y cómo evitarlos) ➡️ Desliza y toma nota. Tu próxima producción te lo agradecerá. 💡 #AgoraNEws #EventosCorporativos",estado:"Borrador"},
+  {id:5,  fecha:"08/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Detrás de cada streaming profesional hay un equipo técnico que lleva horas configurando antes de que todo parezca fácil. Así trabajamos en Ágora News. eventos@agoranews.net",estado:"Borrador"},
+  {id:6,  fecha:"09/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Evento recap",          copy:"RECAP DEL EVENTO 🔥 Lo que pasó la semana pasada en cámara. Realización multicámara, streaming en directo y 0 imprevistos técnicos. Así es Ágora News. #Streaming #Eventos",estado:"Borrador"},
+  {id:21, fecha:"11/05",dia:"Lun",red:"Instagram",   tipo:"Story · Montaje",              copy:"STORY — MADBITCOIN CBA 🔧 Montando en el Círculo de Bellas Artes. Texto overlay: 'Preparando la magia detrás del escenario' + sticker de ubicación CBA Madrid.",estado:"Borrador"},
+  {id:22, fecha:"11/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tiempo real",          copy:"🔧 Montaje en curso para @MADBITCOIN_CBA en el Círculo de Bellas Artes, Madrid. Multicámara y streaming listos para mañana. #RealizacionEventos",estado:"Borrador"},
+  {id:23, fecha:"11/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Previa evento",         copy:"Mañana producimos en el Círculo de Bellas Artes de Madrid. Montaje técnico completo: cámaras, sonido e iluminación. Así empieza cada evento que firma Ágora News. eventos@agoranews.net",estado:"Borrador"},
+  {id:24, fecha:"12/05",dia:"Mar",red:"Instagram",   tipo:"Story · Evento directo",       copy:"STORY — MADBITCOIN CBA 🎥 Stories durante el evento: sala de control activa, planos del espacio, ambiente. Texto: 'En directo desde el @CírculoBellasArtes' + mención @MADBITCOIN_CBA.",estado:"Borrador"},
+  {id:7,  fecha:"12/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Durante evento",       copy:"📹 En producción para @MADBITCOIN_CBA desde el Círculo de Bellas Artes de Madrid. 🎙️ Streaming · 📷 Multicámara · 🔊 Sonido profesional. #StreamingPro",estado:"Borrador"},
+  {id:8,  fecha:"13/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Equipo",            copy:"El equipo que hace posible lo imposible. 🎥 Te presentamos a las personas detrás de cámara en cada producción de Ágora News. Desliza y conóceles. 👇 #Equipo #AgoraNEws",estado:"Borrador"},
+  {id:9,  fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Carrusel · Caso técnico",      copy:"3 claves que ap<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Calendario — Ágora News</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f5;color:#111;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px}
+h1{font-size:20px;font-weight:600}
+.sub{font-size:13px;color:#888;font-weight:400}
+.stats{display:flex;gap:18px;margin-top:6px;flex-wrap:wrap}
+.stats span{font-size:12px;font-weight:500}
+.hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-family:inherit;transition:.15s}
+.btn:hover{opacity:.85}
+.btn-primary{background:#111;color:#fff;border-color:#111}
+.btn-success{background:#EDFAF3;color:#166534;border-color:#6EE7B7}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.sync-msg{font-size:12px;color:#555}
+.setup{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:20px;margin-bottom:20px}
+.setup h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.setup ol{padding-left:18px;font-size:13px;color:#555;line-height:2.2;margin-bottom:16px}
+.err{font-size:12px;color:red;margin-top:8px;min-height:16px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.sep{width:1px;background:#e0e0e0;margin:0 4px}
+.fbtn{font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid #e0e0e0;background:transparent;color:#555;cursor:pointer;font-family:inherit}
+.fbtn.on{background:#111;color:#fff;border-color:#111}
+.table{border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;background:#fff}
+.thead{display:grid;grid-template-columns:80px 130px 165px 1fr 115px;padding:10px 16px;gap:12px;background:#f5f5f5;border-bottom:1px solid #e5e5e5}
+.thead span{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.row{border-bottom:1px solid #f0f0f0}
+.row:last-child{border-bottom:none}
+.rmain{display:grid;grid-template-columns:80px 130px 165px 1fr 115px;padding:12px 16px;gap:12px;align-items:start;cursor:pointer}
+.rmain:hover{background:#fafafa}
+.fd{font-size:13px;font-weight:500}
+.fw{font-size:11px;color:#aaa}
+.rbadge{font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;border:1px solid;display:inline-block}
+.rname{font-size:12px;color:#666}
+.rcell{display:flex;align-items:center;gap:6px}
+.tipo{font-size:12px;color:#333}
+.cprev{font-size:12px;color:#555;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cprev.exp{display:block;-webkit-line-clamp:unset}
+.ebadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;user-select:none;display:inline-block;white-space:nowrap}
+.rexp{padding:0 16px 16px;border-top:1px solid #f0f0f0}
+.elabel{font-size:11px;color:#aaa;margin:10px 0 6px}
+.cfull{font-size:13px;color:#222;line-height:1.7;white-space:pre-line;flex:1}
+.crow{display:flex;gap:10px;align-items:flex-start}
+textarea.cedit{width:100%;min-height:90px;font-size:13px;font-family:inherit;color:#222;background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:8px 10px;resize:vertical}
+.ebtns{display:flex;gap:8px;margin-top:6px}
+.empty{padding:40px;text-align:center;font-size:13px;color:#aaa}
+.footer{margin-top:10px;font-size:11px;color:#bbb}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>Calendario de contenidos <span class="sub">· Ágora News · Mayo 2025</span></h1>
+      <div class="stats">
+        <span id="s-total" style="color:#888"></span>
+        <span id="s-pub" style="color:#166534"></span>
+        <span id="s-list" style="color:#1A56B0"></span>
+        <span id="s-bor" style="color:#92600A"></span>
+      </div>
+    </div>
+    <div class="hbtns">
+      <span class="sync-msg" id="sync-msg"></span>
+      <button class="btn" id="btn-sync" style="display:none" onclick="pullFromSheets()">↻ Sync</button>
+      <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Google Sheets</button>
+    </div>
+  </div>
+
+  <div class="setup" id="setup-panel" style="display:none">
+    <h3>Conectar con Google Sheets</h3>
+    <ol>
+      <li>Asegúrate de que el workflow de <strong>Pipedream</strong> está en estado <strong>Active</strong>.</li>
+      <li>Asegúrate de haber ejecutado <strong>cargarDatosIniciales()</strong> en Apps Script.</li>
+      <li>Pulsa <strong>Conectar</strong> para sincronizar.</li>
+    </ol>
+    <button class="btn btn-primary" id="btn-do-connect" onclick="doConnect()">Conectar</button>
+    <div class="err" id="connect-err"></div>
+  </div>
+
+  <div class="filters" id="filter-red"></div>
+  <div class="filters" id="filter-sem"></div>
+
+  <div class="table">
+    <div class="thead">
+      <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy propuesto</span><span>Estado</span>
+    </div>
+    <div id="tbody"></div>
+  </div>
+  <p class="footer">Haz clic en una fila para expandir el copy · Haz clic en el estado para cambiarlo</p>
+</div>
+
+<script>
+const PROXY="https://eoquttk4j3kxens.m.pipedream.net";
+const ESTADOS=["Borrador","Listo","Publicado"];
+const EC={Borrador:{bg:"#FEF9EC",color:"#92600A",border:"#F5D97A"},Listo:{bg:"#EBF3FF",color:"#1A56B0",border:"#93C5FD"},Publicado:{bg:"#EDFAF3",color:"#166534",border:"#6EE7B7"}};
+const RC={Instagram:{color:"#C13584",bg:"#FDF2F8",icon:"IG"},LinkedIn:{color:"#0077B5",bg:"#EBF5FB",icon:"LI"},"X (Twitter)":{color:"#1A1A1A",bg:"#F3F4F6",icon:"X"}};
+const REDES=["Todas","Instagram","LinkedIn","X (Twitter)"];
+const SEMANAS=["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
+
+let rows=[
+  {id:1,fecha:"01/05",dia:"Jue",red:"Instagram",tipo:"Reel · Backstage",copy:"Así montamos el escenario antes de que llegue el primer invitado. 30 segundos de puro backstage que no suelen ver. 🎬 #AgoraNEws #RealizacionEventos",estado:"Borrador"},
+  {id:2,fecha:"02/05",dia:"Vie",red:"LinkedIn",tipo:"Post · Antes/Después",copy:"Antes: un espacio vacío. Después: un evento corporativo para 300 personas. Te mostramos el proceso técnico detrás de cada producción. ¿Cuánto tarda realmente el montaje? 👇",estado:"Borrador"},
+  {id:3,fecha:"05/05",dia:"Lun",red:"X (Twitter)",tipo:"Tweet · Tip técnico",copy:"🎙️ Tip de la semana: si el audio en streaming suena hueco, revisa el gain staging antes del encoder. Un ajuste de 3dB puede cambiar la experiencia del espectador. #StreamingPro",estado:"Borrador"},
+  {id:4,fecha:"07/05",dia:"Mié",red:"Instagram",tipo:"Carrusel · Tips",copy:"3 errores de iluminación que arruinan un evento (y cómo evitarlos) ➡️ Desliza y toma nota. Tu próxima producción te lo agradecerá. 💡 #AgoraNEws #EventosCorporativos",estado:"Borrador"},
+  {id:5,fecha:"08/05",dia:"Jue",red:"LinkedIn",tipo:"Post · Backstage foto",copy:"Detrás de cada streaming profesional hay un equipo técnico que lleva horas configurando antes de que todo parezca fácil. Así trabajamos en Ágora News. eventos@agoranews.net",estado:"Borrador"},
+  {id:6,fecha:"09/05",dia:"Vie",red:"Instagram",tipo:"Reel · Evento recap",copy:"RECAP DEL EVENTO 🔥 Lo que pasó la semana pasada en cámara. Realización multicámara, streaming en directo y 0 imprevistos técnicos. Así es Ágora News. #Streaming #Eventos",estado:"Borrador"},
+  {id:21,fecha:"11/05",dia:"Lun",red:"Instagram",tipo:"Story · Montaje",copy:"STORY — MADBITCOIN CBA 🔧 Montando en el Círculo de Bellas Artes. Texto overlay: 'Preparando la magia detrás del escenario' + sticker de ubicación CBA Madrid.",estado:"Borrador"},
+  {id:22,fecha:"11/05",dia:"Lun",red:"X (Twitter)",tipo:"Tweet · Tiempo real",copy:"🔧 Montaje en curso para @MADBITCOIN_CBA en el Círculo de Bellas Artes, Madrid. Multicámara y streaming listos para mañana. #RealizacionEventos",estado:"Borrador"},
+  {id:23,fecha:"11/05",dia:"Lun",red:"LinkedIn",tipo:"Post · Previa evento",copy:"Mañana producimos en el Círculo de Bellas Artes de Madrid. Montaje técnico completo: cámaras, sonido e iluminación. Así empieza cada evento que firma Ágora News. eventos@agoranews.net",estado:"Borrador"},
+  {id:24,fecha:"12/05",dia:"Mar",red:"Instagram",tipo:"Story · Evento directo",copy:"STORY — MADBITCOIN CBA 🎥 Stories durante el evento: sala de control activa, planos del espacio, ambiente. Texto: 'En directo desde el @CírculoBellasArtes' + mención @MADBITCOIN_CBA.",estado:"Borrador"},
+  {id:7,fecha:"12/05",dia:"Mar",red:"X (Twitter)",tipo:"Tweet · Durante evento",copy:"📹 En producción para @MADBITCOIN_CBA desde el Círculo de Bellas Artes de Madrid. 🎙️ Streaming · 📷 Multicámara · 🔊 Sonido profesional. #StreamingPro",estado:"Borrador"},
+  {id:8,fecha:"13/05",dia:"Mié",red:"Instagram",tipo:"Carrusel · Equipo",copy:"El equipo que hace posible lo imposible. 🎥 Te presentamos a las personas detrás de cámara en cada producción de Ágora News. Desliza y conóceles. 👇 #Equipo #AgoraNEws",estado:"Borrador"},
+  {id:9,fecha:"14/05",dia:"Jue",red:"LinkedIn",tipo:"Carrusel · Caso técnico",copy:"3 claves que aprendimos produciendo eventos para instituciones públicas. No es lo mismo una rueda de prensa que un congreso de 500 personas. Aquí los detalles técnicos.",estado:"Borrador"},
+  {id:25,fecha:"14/05",dia:"Jue",red:"Instagram",tipo:"Carrusel · Recap MADBITCOIN",copy:"MADBITCOIN CBA en el Círculo de Bellas Artes ✅ Desliza y descubre cómo lo produjimos. 📍CBA Madrid · 📡Streaming · 🎥Multicámara #AgoraNEws #MADBITCOIN",estado:"Borrador"},
+  {id:26,fecha:"14/05",dia:"Jue",red:"LinkedIn",tipo:"Post · Recap MADBITCOIN",copy:"El martes producimos MADBITCOIN CBA en el Círculo de Bellas Artes de Madrid. Realización multicámara y streaming profesional. eventos@agoranews.net",estado:"Borrador"},
+  {id:10,fecha:"15/05",dia:"Jue",red:"Instagram",tipo:"Reel · Antes/Después",copy:"ANTES vs DESPUÉS ⚡ El mismo espacio, dos realidades. El montaje que no ves es el trabajo que más importa. ¿Te sorprende el resultado? 👇 #MontajeEventos #AgoraNEws",estado:"Borrador"},
+  {id:11,fecha:"16/05",dia:"Vie",red:"X (Twitter)",tipo:"Tweet · Encuesta",copy:"🎤 ¿Qué formato de evento es técnicamente más exigente? 🔴 Streaming · 🟡 Congreso · 🟢 Híbrido · 🔵 Rueda de prensa #EventosCorporativos",estado:"Borrador"},
+  {id:27,fecha:"19/05",dia:"Lun",red:"Instagram",tipo:"Reel · Backstage MADBITCOIN",copy:"Lo que no viste del MADBITCOIN CBA 🎬 Detrás de cámaras en el Círculo de Bellas Artes. #AgoraNEws #MADBITCOIN #RealizacionEventos",estado:"Borrador"},
+  {id:12,fecha:"19/05",dia:"Lun",red:"LinkedIn",tipo:"Post · Tip técnico",copy:"¿Sabías que la posición del micrófono de solapa puede cambiar completamente la percepción de un ponente en streaming? El audio es el 70% de la experiencia.",estado:"Borrador"},
+  {id:13,fecha:"20/05",dia:"Mar",red:"X (Twitter)",tipo:"Tweet · Backstage",copy:"🔧 Mientras el público ve el show, nosotros estamos aquí. Sala de control activa y equipo listo para cualquier imprevisto. #StreamingPro",estado:"Borrador"},
+  {id:28,fecha:"21/05",dia:"Mié",red:"Instagram",tipo:"Reel · Highlights MADBITCOIN",copy:"Los mejores momentos del MADBITCOIN CBA ⚡ Streaming, multicámara y el Círculo de Bellas Artes como escenario. 🎥 #MADBITCOIN #AgoraNEws",estado:"Borrador"},
+  {id:14,fecha:"21/05",dia:"Mié",red:"LinkedIn",tipo:"Post · Backstage foto",copy:"Una imagen del montaje vale más que cualquier catálogo de servicios. Realización multicámara en Madrid. eventos@agoranews.net",estado:"Borrador"},
+  {id:15,fecha:"22/05",dia:"Jue",red:"Instagram",tipo:"Reel · Innovación",copy:"¿Streaming en metaverso? Ya lo hacemos. 🌐 Producimos eventos en entornos virtuales 3D. El futuro de los eventos ya está aquí. #Metaverso #AgoraNEws",estado:"Borrador"},
+  {id:16,fecha:"23/05",dia:"Vie",red:"LinkedIn",tipo:"Post backstage + foto",copy:"Una imagen del montaje vale más que cualquier catálogo. Realización multicámara para evento corporativo en Madrid. ¿Cuándo es el tuyo? eventos@agoranews.net",estado:"Borrador"},
+  {id:17,fecha:"26/05",dia:"Lun",red:"X (Twitter)",tipo:"Tweet · Caso estudio",copy:"🎯 Caso real: streaming para 1.200 espectadores simultáneos con 0 cortes. Hilo de cómo lo resolvimos 🧵👇 #RealizacionEventos #StreamingPro",estado:"Borrador"},
+  {id:18,fecha:"27/05",dia:"Mar",red:"Instagram",tipo:"Carrusel · Recap mes",copy:"Mayo en imágenes 📸 Todo lo que produjimos este mes. Desliza y revive el mes. 🔥 #AgoraNEws #Eventos",estado:"Borrador"},
+  {id:19,fecha:"28/05",dia:"Mié",red:"LinkedIn",tipo:"Carrusel · Resumen mes",copy:"Mayo ha sido intenso. Resumen de todo lo que produjo el equipo de Ágora News. ¿Trabajamos juntos en junio? eventos@agoranews.net",estado:"Borrador"},
+  {id:20,fecha:"30/05",dia:"Vie",red:"Instagram",tipo:"Reel · Cierre mes",copy:"MAYO 2025 ✅ Un mes, muchas producciones. Nos vemos en junio con más eventos. 🎬 #AgoraNEws #Recap",estado:"Borrador"},
+];
+
+let connected=false, expandedId=null, editingId=null;
+let filterRed="Todas", filterSem="Todas";
+
+function semana(f){const d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
+function notify(m,ms=3000){const el=document.getElementById("sync-msg");el.textContent=m;setTimeout(()=>el.textContent="",ms);}
+
+// ── Filtros
+function buildFilters(){
+  const rd=document.getElementById("filter-red");
+  const rs=document.getElementById("filter-sem");
+  rd.innerHTML=REDES.map(r=>`<button class="fbtn${r===filterRed?" on":""}" onclick="setFRed('${r}')">${r}</button>`).join("");
+  rs.innerHTML=SEMANAS.map(s=>`<button class="fbtn${s===filterSem?" on":""}" onclick="setFSem('${encodeURIComponent(s)}')">${s}</button>`).join("");
+}
+function setFRed(v){filterRed=v;render();}
+function setFSem(v){filterSem=decodeURIComponent(v);render();}
+
+// ── Stats
+function updateStats(){
+  const t=rows.length,p=rows.filter(r=>r.estado==="Publicado").length,l=rows.filter(r=>r.estado==="Listo").length,b=rows.filter(r=>r.estado==="Borrador").length;
+  document.getElementById("s-total").textContent=t+" entradas";
+  document.getElementById("s-pub").textContent=p+" publicadas";
+  document.getElementById("s-list").textContent=l+" listas";
+  document.getElementById("s-bor").textContent=b+" borradores";
+}
+
+// ── Render tabla
+function render(){
+  buildFilters();updateStats();
+  const filtered=rows.filter(r=>(filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem));
+  const tb=document.getElementById("tbody");
+  if(!filtered.length){tb.innerHTML='<div class="empty">Sin entradas para los filtros seleccionados.</div>';return;}
+  tb.innerHTML=filtered.map((r,i)=>{
+    const rc=RC[r.red]||{color:"#888",bg:"#eee",icon:"?"};
+    const ec=EC[r.estado]||EC.Borrador;
+    const isExp=expandedId===r.id;
+    const isEdit=editingId===r.id;
+    return`<div class="row" id="row-${r.id}">
+      <div class="rmain" onclick="toggleRow(${r.id})">
+        <div><div class="fd">${r.fecha}</div><div class="fw">${r.dia}</div></div>
+        <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
+        <div class="tipo">${r.tipo}</div>
+        <div class="cprev${isExp?" exp":""}">${r.copy.replace(/</g,"&lt;")}</div>
+        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="event.stopPropagation();cycleEstado(${r.id})">${r.estado}</span>
+      </div>
+      ${isExp?`<div class="rexp">
+        <div class="elabel">Copy completo</div>
+        ${isEdit?`
+          <textarea class="cedit" id="ta-${r.id}">${r.copy.replace(/</g,"&lt;")}</textarea>
+          <div class="ebtns">
+            <button class="btn btn-primary" onclick="saveCopy(${r.id})">Guardar${connected?" + Sync":""}</button>
+            <button class="btn" onclick="cancelEdit()">Cancelar</button>
+          </div>`:`
+          <div class="crow">
+            <span class="cfull">${r.copy.replace(/</g,"&lt;")}</span>
+            <button class="btn" onclick="startEdit(${r.id})">Editar</button>
+          </div>`}
+      </div>`:""}
+    </div>`;
+  }).join("");
+}
+
+function toggleRow(id){expandedId=expandedId===id?null:id;editingId=null;render();}
+function startEdit(id){editingId=id;render();setTimeout(()=>{const t=document.getElementById("ta-"+id);if(t)t.focus();},50);}
+function cancelEdit(){editingId=null;render();}
+
+function cycleEstado(id){
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  const i=ESTADOS.indexOf(r.estado);
+  r.estado=ESTADOS[(i+1)%ESTADOS.length];
+  render();
+  if(connected)pushRow(r);
+}
+
+function saveCopy(id){
+  const ta=document.getElementById("ta-"+id);if(!ta)return;
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  r.copy=ta.value;
+  editingId=null;render();
+  if(connected)pushRow(r);
+}
+
+// ── Sheets
+async function pushRow(row){
+  try{
+    await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upsert",row})});
+    notify("☁️ Guardado en Sheets");
+  }catch{notify("⚠️ Guardado solo en local");}
+}
+
+async function pullFromSheets(){
+  document.getElementById("btn-sync").textContent="Sincronizando…";
+  try{
+    const res=await fetch(PROXY);
+    const data=await res.json();
+    if(data.ok&&data.rows?.length){rows=data.rows;render();notify("✅ Datos actualizados desde Sheets");}
+    else notify("⚠️ Sin datos en Sheets");
+  }catch(e){notify("❌ Error: "+e.message);}
+  document.getElementById("btn-sync").textContent="↻ Sync";
+}
+
+function toggleSetup(){
+  const p=document.getElementById("setup-panel");
+  p.style.display=p.style.display==="none"?"block":"none";
+}
+
+async function doConnect(){
+  const btn=document.getElementById("btn-do-connect");
+  const err=document.getElementById("connect-err");
+  err.textContent="";btn.disabled=true;btn.textContent="Conectando…";
+  try{
+    const res=await fetch(PROXY);
+    const data=await res.json();
+    connected=true;
+    document.getElementById("setup-panel").style.display="none";
+    document.getElementById("btn-connect").textContent="✅ Sheets conectado";
+    document.getElementById("btn-connect").className="btn btn-success";
+    document.getElementById("btn-sync").style.display="inline-block";
+    if(data.ok&&data.rows?.length){
+      rows=data.rows;render();notify("✅ Conectado · datos cargados desde Sheets");
+    }else{
+      // Seed
+      const r2=await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"seed",rows})});
+      const d2=await r2.json();
+      if(d2.ok){notify("✅ Conectado · calendario volcado a Sheets");}
+      else err.textContent="Error al volcar: "+(d2.error||"desconocido");
+    }
+  }catch(e){err.textContent="No se pudo conectar: "+e.message;connected=false;}
+  btn.disabled=false;btn.textContent="Conectar";
+}
+
+render();
+</script>
+</body>
+</html>
