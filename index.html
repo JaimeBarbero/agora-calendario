@@ -15,7 +15,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 #pwd-input:focus{outline:none;border-color:#111}
 #pwd-err{font-size:12px;color:red;min-height:18px;margin-bottom:10px}
 #pwd-btn{width:100%;padding:10px;background:#111;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer}
-#pwd-btn:hover{background:#333}
 #app{display:none}
 .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
 .header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px}
@@ -23,7 +22,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .stats span{font-size:12px;font-weight:500}
 .hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-family:inherit}
-.btn:hover{opacity:.85}
 .btn-primary{background:#111;color:#fff;border-color:#111}
 .btn-success{background:#EDFAF3;color:#166534;border-color:#6EE7B7}
 .sync-msg{font-size:12px;color:#555}
@@ -50,43 +48,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .cprev{font-size:12px;color:#555;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ebadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;user-select:none;display:inline-block;white-space:nowrap}
 .row-actions{display:flex;gap:6px;align-items:center}
-.editbtn{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#555;font-family:inherit}
-.editbtn:hover{background:#f5f5f5}
-.delbtn{color:#ccc;font-size:14px;cursor:pointer;background:none;border:none;padding:2px 4px;font-family:inherit;line-height:1}
-.delbtn:hover{color:#e53e3e}
+.editbtn{font-size:13px;padding:3px 7px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;font-family:inherit}
+.delbtn{font-size:13px;padding:3px 7px;border-radius:6px;border:1px solid #fdd;background:#fff;cursor:pointer;color:#e53e3e;font-family:inherit}
 .empty{padding:40px;text-align:center;font-size:13px;color:#aaa}
 .footer{margin-top:10px;font-size:11px;color:#bbb}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
-.overlay.open{display:flex}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
 .modal{background:#fff;border-radius:14px;padding:28px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto}
 .modal h3{font-size:15px;font-weight:600;margin-bottom:18px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
-.form-group{display:flex;flex-direction:column;gap:4px}
-.form-group.full{grid-column:1/-1}
-.form-group label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em}
-.form-group input,.form-group select,.form-group textarea{padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#111}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#111}
-.form-group textarea{resize:vertical;min-height:100px}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fg label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#111}
+.fg textarea{resize:vertical;min-height:100px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-btns{display:flex;gap:8px;margin-top:18px}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <h2>Ágora News</h2>
     <p>Introduce la contraseña para acceder al calendario</p>
-    <input type="password" id="pwd-input" placeholder="••••••••"/>
+    <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()"/>
     <div id="pwd-err"></div>
-    <button id="pwd-btn">Entrar</button>
+    <button id="pwd-btn" onclick="login()">Entrar</button>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
 <div class="wrap">
-
   <div class="header">
     <div>
       <h1 style="font-size:20px;font-weight:600">Calendario de contenidos <span style="font-size:13px;color:#888;font-weight:400">· Ágora News · Mayo 2026</span></h1>
@@ -99,67 +89,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
     <div class="hbtns">
       <span class="sync-msg" id="sync-msg"></span>
-      <button class="btn" id="btn-sync" style="display:none" onclick="pullFromSheets()">↻ Sync</button>
-      <button class="btn" onclick="openNewModal()">+ Nueva entrada</button>
-      <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Google Sheets</button>
+      <button class="btn" id="btn-sync" style="display:none" onclick="syncSheets()">↻ Sync</button>
+      <button class="btn" onclick="showModal('new-modal')">+ Nueva entrada</button>
+      <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Sheets</button>
     </div>
   </div>
 
-  <div class="setup" id="setup-panel" style="display:none">
+  <div id="setup-panel" style="display:none" class="setup">
     <h3>Conectar con Google Sheets</h3>
     <ol>
-      <li>Asegúrate de que el workflow de <strong>Pipedream</strong> está en estado <strong>Active</strong>.</li>
-      <li>Asegúrate de haber ejecutado <strong>cargarDatosIniciales()</strong> en Apps Script.</li>
-      <li>Pulsa <strong>Conectar</strong> para sincronizar.</li>
+      <li>Asegúrate de que Pipedream está <strong>Active</strong>.</li>
+      <li>Ejecuta <strong>cargarDatosIniciales()</strong> en Apps Script.</li>
+      <li>Pulsa <strong>Conectar</strong>.</li>
     </ol>
-    <button class="btn btn-primary" id="btn-do-connect" onclick="doConnect()">Conectar</button>
+    <button class="btn btn-primary" onclick="doConnect()">Conectar</button>
     <div class="err" id="connect-err"></div>
   </div>
 
   <!-- Modal nueva entrada -->
-  <div class="overlay" id="new-overlay">
+  <div id="new-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
     <div class="modal">
       <h3>Nueva entrada</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>Fecha</label><input id="nw-fecha" placeholder="ej: 15/05"/></div>
-        <div class="form-group"><label>Día</label><input id="nw-dia" placeholder="ej: Lun"/></div>
-        <div class="form-group"><label>Red social</label>
-          <select id="nw-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select>
-        </div>
-        <div class="form-group"><label>Tipo</label><input id="nw-tipo" placeholder="ej: Reel · Backstage"/></div>
-        <div class="form-group full"><label>Copy</label><textarea id="nw-copy" placeholder="Escribe el copy aquí..."></textarea></div>
-        <div class="form-group"><label>Estado</label>
-          <select id="nw-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select>
-        </div>
+      <div class="fgrid">
+        <div class="fg"><label>Fecha</label><input id="nw-fecha" placeholder="01/05"/></div>
+        <div class="fg"><label>Día</label><input id="nw-dia" placeholder="Lun"/></div>
+        <div class="fg"><label>Red social</label><select id="nw-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select></div>
+        <div class="fg"><label>Tipo</label><input id="nw-tipo" placeholder="Reel · Backstage"/></div>
       </div>
+      <div class="fg"><label>Copy</label><textarea id="nw-copy" rows="4"></textarea></div>
+      <div class="fg"><label>Estado</label><select id="nw-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select></div>
       <div class="err" id="new-err"></div>
       <div class="modal-btns">
-        <button class="btn btn-primary" onclick="addRow()">Guardar entrada</button>
-        <button class="btn" onclick="closeNewModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="addRow()">Guardar</button>
+        <button class="btn" onclick="hideModal('new-modal')">Cancelar</button>
       </div>
     </div>
   </div>
 
   <!-- Modal editar entrada -->
-  <div class="overlay" id="edit-overlay">
+  <div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
     <div class="modal">
       <h3>Editar entrada</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>Fecha</label><input id="ed-fecha" placeholder="ej: 15/05"/></div>
-        <div class="form-group"><label>Día</label><input id="ed-dia" placeholder="ej: Lun"/></div>
-        <div class="form-group"><label>Red social</label>
-          <select id="ed-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select>
-        </div>
-        <div class="form-group"><label>Tipo</label><input id="ed-tipo"/></div>
-        <div class="form-group full"><label>Copy</label><textarea id="ed-copy" rows="5"></textarea></div>
-        <div class="form-group"><label>Estado</label>
-          <select id="ed-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select>
-        </div>
+      <div class="fgrid">
+        <div class="fg"><label>Fecha</label><input id="ed-fecha"/></div>
+        <div class="fg"><label>Día</label><input id="ed-dia"/></div>
+        <div class="fg"><label>Red social</label><select id="ed-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select></div>
+        <div class="fg"><label>Tipo</label><input id="ed-tipo"/></div>
       </div>
+      <div class="fg"><label>Copy</label><textarea id="ed-copy" rows="5"></textarea></div>
+      <div class="fg"><label>Estado</label><select id="ed-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select></div>
       <div class="err" id="edit-err"></div>
       <div class="modal-btns">
         <button class="btn btn-primary" onclick="saveEdit()">Guardar cambios</button>
-        <button class="btn" onclick="closeEditModal()">Cancelar</button>
+        <button class="btn" onclick="hideModal('edit-modal')">Cancelar</button>
       </div>
     </div>
   </div>
@@ -169,11 +151,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <div class="table">
     <div class="thead">
-      <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy propuesto</span><span>Estado</span><span>Acciones</span>
+      <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy</span><span>Estado</span><span>Acciones</span>
     </div>
     <div id="tbody"></div>
   </div>
-  <p class="footer">Clic en estado para cambiarlo · Clic en ✏️ para editar · Clic en ✕ para eliminar</p>
+  <p class="footer">Clic en estado para cambiarlo · ✏️ editar · ✕ eliminar</p>
 </div>
 </div>
 
@@ -185,89 +167,78 @@ const EC={Borrador:{bg:"#FEF9EC",color:"#92600A",border:"#F5D97A"},Listo:{bg:"#E
 const RC={Instagram:{color:"#C13584",bg:"#FDF2F8",icon:"IG"},LinkedIn:{color:"#0077B5",bg:"#EBF5FB",icon:"LI"},"X (Twitter)":{color:"#1A1A1A",bg:"#F3F4F6",icon:"X"}};
 const REDES=["Todas","Instagram","LinkedIn","X (Twitter)"];
 const SEMANAS=["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
-const INITIAL_DATA=[
+const DATA=[
   {id:1,  fecha:"01/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Backstage",            copy:"Así montamos el escenario antes de que llegue el primer invitado. 30 segundos de puro backstage que no suelen ver. 🎬 #AgoraNEws #RealizacionEventos",estado:"Borrador"},
   {id:2,  fecha:"02/05",dia:"Vie",red:"LinkedIn",    tipo:"Post · Antes/Después",         copy:"Antes: un espacio vacío. Después: un evento corporativo para 300 personas. Te mostramos el proceso técnico detrás de cada producción. ¿Cuánto tarda realmente el montaje? 👇",estado:"Borrador"},
   {id:3,  fecha:"05/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tip técnico",          copy:"🎙️ Tip de la semana: si el audio en streaming suena hueco, revisa el gain staging antes del encoder. Un ajuste de 3dB puede cambiar la experiencia del espectador. #StreamingPro",estado:"Borrador"},
-  {id:4,  fecha:"07/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Tips",              copy:"3 errores de iluminación que arruinan un evento (y cómo evitarlos) ➡️ Desliza y toma nota. Tu próxima producción te lo agradecerá. 💡 #AgoraNEws #EventosCorporativos",estado:"Borrador"},
-  {id:5,  fecha:"08/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Detrás de cada streaming profesional hay un equipo técnico que lleva horas configurando antes de que todo parezca fácil. Así trabajamos en Ágora News. eventos@agoranews.net",estado:"Borrador"},
-  {id:6,  fecha:"09/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Evento recap",          copy:"RECAP DEL EVENTO 🔥 Lo que pasó la semana pasada en cámara. Realización multicámara, streaming en directo y 0 imprevistos técnicos. Así es Ágora News. #Streaming #Eventos",estado:"Borrador"},
-  {id:21, fecha:"11/05",dia:"Lun",red:"Instagram",   tipo:"Story · Montaje",              copy:"STORY — MADBITCOIN CBA 🔧 Montando en el Círculo de Bellas Artes. Texto overlay: 'Preparando la magia detrás del escenario' + sticker de ubicación CBA Madrid.",estado:"Borrador"},
-  {id:22, fecha:"11/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tiempo real",          copy:"🔧 Montaje en curso para @MADBITCOIN_CBA en el Círculo de Bellas Artes, Madrid. Multicámara y streaming listos para mañana. #RealizacionEventos",estado:"Borrador"},
-  {id:23, fecha:"11/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Previa evento",         copy:"Mañana producimos en el Círculo de Bellas Artes de Madrid. Montaje técnico completo: cámaras, sonido e iluminación. Así empieza cada evento que firma Ágora News. eventos@agoranews.net",estado:"Borrador"},
-  {id:24, fecha:"12/05",dia:"Mar",red:"Instagram",   tipo:"Story · Evento directo",       copy:"STORY — MADBITCOIN CBA 🎥 Stories durante el evento: sala de control activa, planos del espacio, ambiente. En directo desde el @CírculoBellasArtes + mención @MADBITCOIN_CBA.",estado:"Borrador"},
-  {id:7,  fecha:"12/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Durante evento",       copy:"📹 En producción para @MADBITCOIN_CBA desde el Círculo de Bellas Artes de Madrid. 🎙️ Streaming · 📷 Multicámara · 🔊 Sonido profesional. #StreamingPro",estado:"Borrador"},
-  {id:8,  fecha:"13/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Equipo",            copy:"El equipo que hace posible lo imposible. 🎥 Te presentamos a las personas detrás de cámara en cada producción de Ágora News. Desliza y conóceles. 👇 #Equipo #AgoraNEws",estado:"Borrador"},
-  {id:9,  fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Carrusel · Caso técnico",      copy:"3 claves que aprendimos produciendo eventos para instituciones públicas. No es lo mismo una rueda de prensa que un congreso de 500 personas. Aquí los detalles técnicos.",estado:"Borrador"},
-  {id:25, fecha:"14/05",dia:"Jue",red:"Instagram",   tipo:"Carrusel · Recap MADBITCOIN",  copy:"MADBITCOIN CBA en el Círculo de Bellas Artes ✅ Desliza y descubre cómo lo produjimos. 📍CBA Madrid · 📡Streaming · 🎥Multicámara #AgoraNEws #MADBITCOIN",estado:"Borrador"},
-  {id:26, fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Recap MADBITCOIN",      copy:"El martes producimos MADBITCOIN CBA en el Círculo de Bellas Artes de Madrid. Realización multicámara y streaming profesional. eventos@agoranews.net",estado:"Borrador"},
-  {id:10, fecha:"15/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Antes/Después",         copy:"ANTES vs DESPUÉS ⚡ El mismo espacio, dos realidades. El montaje que no ves es el trabajo que más importa. ¿Te sorprende el resultado? 👇 #MontajeEventos #AgoraNEws",estado:"Borrador"},
-  {id:11, fecha:"16/05",dia:"Vie",red:"X (Twitter)", tipo:"Tweet · Encuesta",             copy:"🎤 ¿Qué formato de evento es técnicamente más exigente? 🔴 Streaming · 🟡 Congreso · 🟢 Híbrido · 🔵 Rueda de prensa #EventosCorporativos",estado:"Borrador"},
-  {id:27, fecha:"19/05",dia:"Lun",red:"Instagram",   tipo:"Reel · Backstage MADBITCOIN",  copy:"Lo que no viste del MADBITCOIN CBA 🎬 Detrás de cámaras en el Círculo de Bellas Artes. #AgoraNEws #MADBITCOIN #RealizacionEventos",estado:"Borrador"},
-  {id:12, fecha:"19/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Tip técnico",           copy:"¿Sabías que la posición del micrófono de solapa puede cambiar completamente la percepción de un ponente en streaming? El audio es el 70% de la experiencia.",estado:"Borrador"},
-  {id:13, fecha:"20/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Backstage",            copy:"🔧 Mientras el público ve el show, nosotros estamos aquí. Sala de control activa y equipo listo para cualquier imprevisto. #StreamingPro",estado:"Borrador"},
-  {id:28, fecha:"21/05",dia:"Mié",red:"Instagram",   tipo:"Reel · Highlights MADBITCOIN", copy:"Los mejores momentos del MADBITCOIN CBA ⚡ Streaming, multicámara y el Círculo de Bellas Artes como escenario. 🎥 #MADBITCOIN #AgoraNEws",estado:"Borrador"},
-  {id:14, fecha:"21/05",dia:"Mié",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Una imagen del montaje vale más que cualquier catálogo de servicios. Realización multicámara en Madrid. eventos@agoranews.net",estado:"Borrador"},
-  {id:15, fecha:"22/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Innovación",            copy:"¿Streaming en metaverso? Ya lo hacemos. 🌐 Producimos eventos en entornos virtuales 3D. El futuro de los eventos ya está aquí. #Metaverso #AgoraNEws",estado:"Borrador"},
-  {id:16, fecha:"23/05",dia:"Vie",red:"LinkedIn",    tipo:"Post backstage + foto",        copy:"Una imagen del montaje vale más que cualquier catálogo. Realización multicámara para evento corporativo en Madrid. ¿Cuándo es el tuyo? eventos@agoranews.net",estado:"Borrador"},
-  {id:17, fecha:"26/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Caso estudio",         copy:"🎯 Caso real: streaming para 1.200 espectadores simultáneos con 0 cortes. Hilo de cómo lo resolvimos 🧵👇 #RealizacionEventos #StreamingPro",estado:"Borrador"},
-  {id:18, fecha:"27/05",dia:"Mar",red:"Instagram",   tipo:"Carrusel · Recap mes",         copy:"Mayo en imágenes 📸 Todo lo que produjimos este mes. Desliza y revive el mes. 🔥 #AgoraNEws #Eventos",estado:"Borrador"},
-  {id:19, fecha:"28/05",dia:"Mié",red:"LinkedIn",    tipo:"Carrusel · Resumen mes",       copy:"Mayo ha sido intenso. Resumen de todo lo que produjo el equipo de Ágora News. ¿Trabajamos juntos en junio? eventos@agoranews.net",estado:"Borrador"},
-  {id:20, fecha:"30/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Cierre mes",            copy:"MAYO 2026 ✅ Un mes, muchas producciones. Nos vemos en junio con más eventos. 🎬 #AgoraNEws #Recap",estado:"Borrador"},
+  {id:4,  fecha:"07/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Tips",              copy:"3 errores de iluminación que arruinan un evento (y cómo evitarlos) ➡️ Desliza y toma nota. 💡 #AgoraNEws #EventosCorporativos",estado:"Borrador"},
+  {id:5,  fecha:"08/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Detrás de cada streaming profesional hay un equipo técnico que lleva horas configurando antes de que todo parezca fácil. eventos@agoranews.net",estado:"Borrador"},
+  {id:6,  fecha:"09/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Evento recap",          copy:"RECAP DEL EVENTO 🔥 Realización multicámara, streaming en directo y 0 imprevistos técnicos. Así es Ágora News. #Streaming #Eventos",estado:"Borrador"},
+  {id:21, fecha:"11/05",dia:"Lun",red:"Instagram",   tipo:"Story · Montaje",              copy:"STORY — MADBITCOIN CBA 🔧 Montando en el Círculo de Bellas Artes. Texto overlay: Preparando la magia detrás del escenario + sticker CBA Madrid.",estado:"Borrador"},
+  {id:22, fecha:"11/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tiempo real",          copy:"🔧 Montaje en curso para @MADBITCOIN_CBA en el Círculo de Bellas Artes. Multicámara y streaming listos. #RealizacionEventos",estado:"Borrador"},
+  {id:23, fecha:"11/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Previa evento",         copy:"Mañana producimos en el Círculo de Bellas Artes de Madrid. Montaje técnico completo: cámaras, sonido e iluminación. eventos@agoranews.net",estado:"Borrador"},
+  {id:24, fecha:"12/05",dia:"Mar",red:"Instagram",   tipo:"Story · Evento directo",       copy:"STORY — MADBITCOIN CBA 🎥 En directo desde el Círculo de Bellas Artes + mención @MADBITCOIN_CBA.",estado:"Borrador"},
+  {id:7,  fecha:"12/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Durante evento",       copy:"📹 En producción para @MADBITCOIN_CBA desde el Círculo de Bellas Artes. 🎙️ Streaming · 📷 Multicámara · 🔊 Sonido profesional. #StreamingPro",estado:"Borrador"},
+  {id:8,  fecha:"13/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Equipo",            copy:"El equipo que hace posible lo imposible. 🎥 Las personas detrás de cámara en cada producción de Ágora News. #Equipo #AgoraNEws",estado:"Borrador"},
+  {id:9,  fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Carrusel · Caso técnico",      copy:"3 claves que aprendimos produciendo eventos para instituciones públicas. Aquí los detalles técnicos que marcan la diferencia.",estado:"Borrador"},
+  {id:25, fecha:"14/05",dia:"Jue",red:"Instagram",   tipo:"Carrusel · Recap MADBITCOIN",  copy:"MADBITCOIN CBA en el Círculo de Bellas Artes ✅ 📍CBA Madrid · 📡Streaming · 🎥Multicámara #AgoraNEws #MADBITCOIN",estado:"Borrador"},
+  {id:26, fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Recap MADBITCOIN",      copy:"El martes producimos MADBITCOIN CBA en el Círculo de Bellas Artes. Realización multicámara y streaming profesional. eventos@agoranews.net",estado:"Borrador"},
+  {id:10, fecha:"15/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Antes/Después",         copy:"ANTES vs DESPUÉS ⚡ El mismo espacio, dos realidades. #MontajeEventos #AgoraNEws",estado:"Borrador"},
+  {id:11, fecha:"16/05",dia:"Vie",red:"X (Twitter)", tipo:"Tweet · Encuesta",             copy:"🎤 ¿Qué formato de evento es más exigente? 🔴 Streaming · 🟡 Congreso · 🟢 Híbrido · 🔵 Rueda de prensa #EventosCorporativos",estado:"Borrador"},
+  {id:27, fecha:"19/05",dia:"Lun",red:"Instagram",   tipo:"Reel · Backstage MADBITCOIN",  copy:"Lo que no viste del MADBITCOIN CBA 🎬 Detrás de cámaras en el Círculo de Bellas Artes. #AgoraNEws #MADBITCOIN",estado:"Borrador"},
+  {id:12, fecha:"19/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Tip técnico",           copy:"¿Sabías que la posición del micrófono de solapa puede cambiar la percepción de un ponente en streaming? El audio es el 70% de la experiencia.",estado:"Borrador"},
+  {id:13, fecha:"20/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Backstage",            copy:"🔧 Mientras el público ve el show, nosotros estamos aquí. Sala de control activa. #StreamingPro",estado:"Borrador"},
+  {id:28, fecha:"21/05",dia:"Mié",red:"Instagram",   tipo:"Reel · Highlights MADBITCOIN", copy:"Los mejores momentos del MADBITCOIN CBA ⚡ #MADBITCOIN #AgoraNEws",estado:"Borrador"},
+  {id:14, fecha:"21/05",dia:"Mié",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Una imagen del montaje vale más que cualquier catálogo. Realización multicámara en Madrid. eventos@agoranews.net",estado:"Borrador"},
+  {id:15, fecha:"22/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Innovación",            copy:"¿Streaming en metaverso? Ya lo hacemos. 🌐 #Metaverso #AgoraNEws",estado:"Borrador"},
+  {id:16, fecha:"23/05",dia:"Vie",red:"LinkedIn",    tipo:"Post backstage + foto",        copy:"Una imagen del montaje vale más que cualquier catálogo. ¿Cuándo es el tuyo? eventos@agoranews.net",estado:"Borrador"},
+  {id:17, fecha:"26/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Caso estudio",         copy:"🎯 Streaming para 1.200 espectadores con 0 cortes. Hilo 🧵👇 #RealizacionEventos #StreamingPro",estado:"Borrador"},
+  {id:18, fecha:"27/05",dia:"Mar",red:"Instagram",   tipo:"Carrusel · Recap mes",         copy:"Mayo en imágenes 📸 Todo lo que produjimos este mes. 🔥 #AgoraNEws #Eventos",estado:"Borrador"},
+  {id:19, fecha:"28/05",dia:"Mié",red:"LinkedIn",    tipo:"Carrusel · Resumen mes",       copy:"Mayo ha sido intenso. ¿Trabajamos juntos en junio? eventos@agoranews.net",estado:"Borrador"},
+  {id:20, fecha:"30/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Cierre mes",            copy:"MAYO 2026 ✅ Nos vemos en junio. 🎬 #AgoraNEws #Recap",estado:"Borrador"},
 ];
 
 let rows=[], connected=false, filterRed="Todas", filterSem="Todas", editingId=null;
 
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function notify(m,ms=3000){const el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(()=>el.textContent="",ms);}}
-function save(){localStorage.setItem("agora-calendario",JSON.stringify(rows));}
+function save(){localStorage.setItem("agora-cal",JSON.stringify(rows));}
 function semana(f){const d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
 
-// LOGIN
-function checkPwd(){
-  const input=document.getElementById("pwd-input");
-  const err=document.getElementById("pwd-err");
-  if(input.value===PWD){
-    sessionStorage.setItem("agora-auth","1");
+function login(){
+  const v=document.getElementById("pwd-input").value;
+  if(v===PWD){
+    sessionStorage.setItem("ok","1");
     document.getElementById("login-screen").style.display="none";
     document.getElementById("app").style.display="block";
-    initApp();
+    start();
   } else {
-    err.textContent="Contraseña incorrecta";
-    input.value="";
-    setTimeout(()=>err.textContent="",2500);
+    document.getElementById("pwd-err").textContent="Contraseña incorrecta";
+    document.getElementById("pwd-input").value="";
+    setTimeout(()=>document.getElementById("pwd-err").textContent="",2500);
   }
 }
 
-// INIT
-async function initApp(){
-  const saved=localStorage.getItem("agora-calendario");
-  if(saved){try{rows=JSON.parse(saved);}catch(e){rows=[...INITIAL_DATA];}}
-  else{rows=[...INITIAL_DATA];}
+function start(){
+  const s=localStorage.getItem("agora-cal");
+  rows=s?JSON.parse(s):[...DATA];
   connected=true;
   document.getElementById("btn-connect").textContent="✅ Sheets conectado";
   document.getElementById("btn-connect").className="btn btn-success";
   document.getElementById("btn-sync").style.display="inline-block";
-
-  // Delegación de eventos para la tabla
-  document.getElementById("tbody").addEventListener("click",function(e){
-    const editBtn=e.target.closest(".editbtn");
-    const delBtn=e.target.closest(".delbtn");
-    const estadoBtn=e.target.closest(".ebadge");
-    if(editBtn) openEditModal(parseInt(editBtn.dataset.id));
-    if(delBtn)  deleteRow(parseInt(delBtn.dataset.id));
-    if(estadoBtn) cycleEstado(parseInt(estadoBtn.dataset.id));
-  });
-
   render();
-  notify("📋 Datos locales cargados · pulsa Sync para actualizar desde Sheets");
+  notify("📋 Datos cargados · pulsa Sync para actualizar");
 }
 
-// RENDER
+function showModal(id){document.getElementById(id).style.display="flex";}
+function hideModal(id){document.getElementById(id).style.display="none";}
+function toggleSetup(){const p=document.getElementById("setup-panel");p.style.display=p.style.display==="none"?"block":"none";}
+
 function buildFilters(){
   document.getElementById("filter-red").innerHTML=REDES.map(r=>`<button class="fbtn${r===filterRed?" on":""}" onclick="filterRed='${r}';render()">${r}</button>`).join("");
-  document.getElementById("filter-sem").innerHTML=SEMANAS.map(s=>`<button class="fbtn${s===filterSem?" on":""}" onclick="filterSem=this.dataset.v;render()" data-v="${s}">${s}</button>`).join("");
+  document.getElementById("filter-sem").innerHTML=SEMANAS.map(s=>`<button class="fbtn${s===filterSem?" on":""}" onclick="filterSem='${s}';render()">${s}</button>`).join("");
 }
+
 function updateStats(){
   const t=rows.length,p=rows.filter(r=>r.estado==="Publicado").length,l=rows.filter(r=>r.estado==="Listo").length,b=rows.filter(r=>r.estado==="Borrador").length;
   document.getElementById("s-total").textContent=t+" entradas";
@@ -275,33 +246,36 @@ function updateStats(){
   document.getElementById("s-list").textContent=l+" listas";
   document.getElementById("s-bor").textContent=b+" borradores";
 }
+
 function render(){
-  buildFilters(); updateStats();
-  const filtered=rows.filter(r=>(filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem));
+  buildFilters();updateStats();
+  const f=rows.filter(r=>(filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem));
   const tb=document.getElementById("tbody");
-  if(!tb)return;
-  if(!filtered.length){tb.innerHTML='<div class="empty">Sin entradas para los filtros seleccionados.</div>';return;}
-  tb.innerHTML=filtered.map(r=>{
+  if(!f.length){tb.innerHTML='<div class="empty">Sin entradas.</div>';return;}
+  tb.innerHTML=f.map(r=>{
     const rc=RC[r.red]||{color:"#888",bg:"#eee",icon:"?"};
     const ec=EC[r.estado]||EC.Borrador;
-    return`<div class="row">
-      <div class="rmain">
-        <div><div class="fd">${r.fecha}</div><div class="fw">${r.dia}</div></div>
-        <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
-        <div class="tipo">${esc(r.tipo)}</div>
-        <div class="cprev">${esc(r.copy)}</div>
-        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="window.cycleEstado(${r.id})" title="Clic para cambiar estado">${r.estado}</span>
-        <div class="row-actions">
-          <button class="editbtn" onclick="window.openEditModal(${r.id})" title="Editar">✏️</button>
-          <button class="delbtn" onclick="window.deleteRow(${r.id})" title="Eliminar">✕</button>
-        </div>
+    return`<div class="row"><div class="rmain">
+      <div><div class="fd">${r.fecha}</div><div class="fw">${r.dia}</div></div>
+      <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
+      <div class="tipo">${esc(r.tipo)}</div>
+      <div class="cprev">${esc(r.copy)}</div>
+      <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border};cursor:pointer" onclick="cycleEstado(${r.id})">${r.estado}</span>
+      <div class="row-actions">
+        <button class="editbtn" onclick="editRow(${r.id})">✏️</button>
+        <button class="delbtn" onclick="delRow(${r.id})">✕</button>
       </div>
-    </div>`;
+    </div></div>`;
   }).join("");
 }
 
-window.openEditModal=function(id){
-  id=parseInt(id);
+function cycleEstado(id){
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];
+  save();render();if(connected)push(r);
+}
+
+function editRow(id){
   const r=rows.find(x=>x.id===id);if(!r)return;
   editingId=id;
   document.getElementById("ed-fecha").value=r.fecha;
@@ -311,119 +285,74 @@ window.openEditModal=function(id){
   document.getElementById("ed-copy").value=r.copy;
   document.getElementById("ed-estado").value=r.estado;
   document.getElementById("edit-err").textContent="";
-  document.getElementById("edit-overlay").classList.add("open");
-};
-window.deleteRow=function(id){
-  id=parseInt(id);
-  if(!confirm("¿Eliminar esta entrada?"))return;
-  rows=rows.filter(r=>r.id!==id);
-  save();render();
-  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado de Sheets")).catch(()=>notify("⚠️ Eliminado solo en local"));
-};
-window.cycleEstado=function(id){
-  id=parseInt(id);
-  const r=rows.find(x=>x.id===id);if(!r)return;
-  r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];
-  save();render();if(connected)pushRow(r);
-};
-
-// MODAL NUEVA ENTRADA
-function openNewModal(){document.getElementById("new-overlay").classList.add("open");document.getElementById("new-err").textContent="";}
-function closeNewModal(){
-  document.getElementById("new-overlay").classList.remove("open");
-  ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
-}
-function addRow(){
-  const fecha=document.getElementById("nw-fecha").value.trim();
-  const dia=document.getElementById("nw-dia").value.trim();
-  const red=document.getElementById("nw-red").value;
-  const tipo=document.getElementById("nw-tipo").value.trim();
-  const copy=document.getElementById("nw-copy").value.trim();
-  const estado=document.getElementById("nw-estado").value;
-  if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
-  const nr={id:Date.now(),fecha,dia,red,tipo,copy,estado};
-  rows.push(nr);rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();closeNewModal();render();if(connected)pushRow(nr);
+  showModal("edit-modal");
 }
 
-// MODAL EDITAR ENTRADA
-function openEditModal(id){window.openEditModal(id);}
-function closeEditModal(){
-  document.getElementById("edit-overlay").classList.remove("open");
-  editingId=null;
-}
 function saveEdit(){
-  if(!editingId)return;
   const r=rows.find(x=>x.id===editingId);if(!r)return;
   const fecha=document.getElementById("ed-fecha").value.trim();
   const tipo=document.getElementById("ed-tipo").value.trim();
   const copy=document.getElementById("ed-copy").value.trim();
   if(!fecha||!tipo||!copy){document.getElementById("edit-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
-  r.fecha=fecha;
-  r.dia=document.getElementById("ed-dia").value.trim();
-  r.red=document.getElementById("ed-red").value;
-  r.tipo=tipo;
-  r.copy=copy;
+  r.fecha=fecha;r.dia=document.getElementById("ed-dia").value.trim();
+  r.red=document.getElementById("ed-red").value;r.tipo=tipo;r.copy=copy;
   r.estado=document.getElementById("ed-estado").value;
   rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();closeEditModal();render();
-  if(connected)pushRow(r);
+  save();hideModal("edit-modal");render();if(connected)push(r);
 }
 
-// ELIMINAR
-function deleteRow(id){window.deleteRow(id);}
+function delRow(id){
+  if(!confirm("¿Eliminar esta entrada?"))return;
+  rows=rows.filter(r=>r.id!==id);save();render();
+  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
+}
 
-// SHEETS
-async function pushRow(row){
+function addRow(){
+  const fecha=document.getElementById("nw-fecha").value.trim();
+  const tipo=document.getElementById("nw-tipo").value.trim();
+  const copy=document.getElementById("nw-copy").value.trim();
+  if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
+  const nr={id:Date.now(),fecha,dia:document.getElementById("nw-dia").value.trim(),red:document.getElementById("nw-red").value,tipo,copy,estado:document.getElementById("nw-estado").value};
+  rows.push(nr);rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  save();hideModal("new-modal");render();if(connected)push(nr);
+  ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(id=>document.getElementById(id).value="");
+}
+
+async function push(row){
   try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upsert",row})});notify("☁️ Guardado en Sheets");}
-  catch{notify("⚠️ Guardado solo en local");}
+  catch{notify("⚠️ Solo guardado en local");}
 }
-async function pullFromSheets(){
+
+async function syncSheets(){
   document.getElementById("btn-sync").textContent="Sincronizando…";
   try{
-    const res=await fetch(PROXY);const data=await res.json();
-    if(data.ok&&data.rows&&data.rows.length){rows=data.rows;save();render();notify("✅ Datos actualizados desde Sheets");}
+    const res=await fetch(PROXY);const d=await res.json();
+    if(d.ok&&d.rows&&d.rows.length){rows=d.rows;save();render();notify("✅ Sincronizado con Sheets");}
     else notify("⚠️ Sin datos en Sheets");
   }catch(e){notify("❌ Error: "+e.message);}
   document.getElementById("btn-sync").textContent="↻ Sync";
 }
-function toggleSetup(){const p=document.getElementById("setup-panel");p.style.display=p.style.display==="none"?"block":"none";}
+
 async function doConnect(){
-  const btn=document.getElementById("btn-do-connect"),err=document.getElementById("connect-err");
-  err.textContent="";btn.disabled=true;btn.textContent="Conectando…";
+  const err=document.getElementById("connect-err");
+  err.textContent="";
   try{
-    const res=await fetch(PROXY);const data=await res.json();
+    const res=await fetch(PROXY);const d=await res.json();
     connected=true;
     document.getElementById("setup-panel").style.display="none";
     document.getElementById("btn-connect").textContent="✅ Sheets conectado";
     document.getElementById("btn-connect").className="btn btn-success";
     document.getElementById("btn-sync").style.display="inline-block";
-    if(data.ok&&data.rows&&data.rows.length){rows=data.rows;save();render();notify("✅ Conectado · datos cargados desde Sheets");}
-    else{const r2=await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"seed",rows})});const d2=await r2.json();if(d2.ok)notify("✅ Conectado · calendario volcado a Sheets");else err.textContent="Error: "+(d2.error||"");}
-  }catch(e){err.textContent="No se pudo conectar: "+e.message;connected=false;}
-  btn.disabled=false;btn.textContent="Conectar";
+    if(d.ok&&d.rows&&d.rows.length){rows=d.rows;save();render();notify("✅ Conectado");}
+    else{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"seed",rows})});notify("✅ Datos volcados a Sheets");}
+  }catch(e){err.textContent="Error: "+e.message;}
 }
 
-// ARRANQUE
-window.addEventListener("load",function(){
-  document.getElementById("pwd-btn").addEventListener("click",checkPwd);
-  document.getElementById("pwd-input").addEventListener("keydown",function(e){if(e.key==="Enter")checkPwd();});
-
-  // Delegación de eventos para botones de la tabla
-  document.getElementById("tbody").addEventListener("click",function(e){
-    const editBtn=e.target.closest(".editbtn");
-    const delBtn=e.target.closest(".delbtn");
-    const estadoBtn=e.target.closest(".ebadge");
-    if(editBtn) openEditModal(parseInt(editBtn.dataset.id));
-    if(delBtn)  deleteRow(parseInt(delBtn.dataset.id));
-    if(estadoBtn) cycleEstado(parseInt(estadoBtn.dataset.id));
-  });
-  if(sessionStorage.getItem("agora-auth")==="1"){
-    document.getElementById("login-screen").style.display="none";
-    document.getElementById("app").style.display="block";
-    initApp();
-  }
-});
+if(sessionStorage.getItem("ok")==="1"){
+  document.getElementById("login-screen").style.display="none";
+  document.getElementById("app").style.display="block";
+  start();
+}
 </script>
 </body>
 </html>
