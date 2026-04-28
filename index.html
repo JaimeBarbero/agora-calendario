@@ -279,10 +279,10 @@ function render(){
         <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
         <div class="tipo">${esc(r.tipo)}</div>
         <div class="cprev">${esc(r.copy)}</div>
-        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="cycleEstado(${r.id})" title="Clic para cambiar estado">${r.estado}</span>
+        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" data-id="${r.id}" title="Clic para cambiar estado">${r.estado}</span>
         <div class="row-actions">
-          <button class="editbtn" onclick="openEditModal(${r.id})" title="Editar">✏️</button>
-          <button class="delbtn" onclick="deleteRow(${r.id})" title="Eliminar">✕</button>
+          <button class="editbtn" data-id="${r.id}" title="Editar">✏️</button>
+          <button class="delbtn" data-id="${r.id}" title="Eliminar">✕</button>
         </div>
       </div>
     </div>`;
@@ -396,6 +396,16 @@ async function doConnect(){
 window.addEventListener("load",function(){
   document.getElementById("pwd-btn").addEventListener("click",checkPwd);
   document.getElementById("pwd-input").addEventListener("keydown",function(e){if(e.key==="Enter")checkPwd();});
+
+  // Delegación de eventos para botones de la tabla
+  document.getElementById("tbody").addEventListener("click",function(e){
+    const editBtn=e.target.closest(".editbtn");
+    const delBtn=e.target.closest(".delbtn");
+    const estadoBtn=e.target.closest(".ebadge");
+    if(editBtn) openEditModal(parseInt(editBtn.dataset.id));
+    if(delBtn)  deleteRow(parseInt(delBtn.dataset.id));
+    if(estadoBtn) cycleEstado(parseInt(estadoBtn.dataset.id));
+  });
   if(sessionStorage.getItem("agora-auth")==="1"){
     document.getElementById("login-screen").style.display="none";
     document.getElementById("app").style.display="block";
