@@ -290,23 +290,42 @@ function render(){
         <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
         <div class="tipo">${esc(r.tipo)}</div>
         <div class="cprev">${esc(r.copy)}</div>
-        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" data-id="${r.id}" title="Clic para cambiar estado">${r.estado}</span>
+        <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}" onclick="window.cycleEstado(${r.id})" title="Clic para cambiar estado">${r.estado}</span>
         <div class="row-actions">
-          <button class="editbtn" data-id="${r.id}" title="Editar">✏️</button>
-          <button class="delbtn" data-id="${r.id}" title="Eliminar">✕</button>
+          <button class="editbtn" onclick="window.openEditModal(${r.id})" title="Editar">✏️</button>
+          <button class="delbtn" onclick="window.deleteRow(${r.id})" title="Eliminar">✕</button>
         </div>
       </div>
     </div>`;
   }).join("");
 }
 
-// ESTADO
-function cycleEstado(id){
+window.openEditModal=function(id){
+  id=parseInt(id);
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  editingId=id;
+  document.getElementById("ed-fecha").value=r.fecha;
+  document.getElementById("ed-dia").value=r.dia;
+  document.getElementById("ed-red").value=r.red;
+  document.getElementById("ed-tipo").value=r.tipo;
+  document.getElementById("ed-copy").value=r.copy;
+  document.getElementById("ed-estado").value=r.estado;
+  document.getElementById("edit-err").textContent="";
+  document.getElementById("edit-overlay").classList.add("open");
+};
+window.deleteRow=function(id){
+  id=parseInt(id);
+  if(!confirm("¿Eliminar esta entrada?"))return;
+  rows=rows.filter(r=>r.id!==id);
+  save();render();
+  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado de Sheets")).catch(()=>notify("⚠️ Eliminado solo en local"));
+};
+window.cycleEstado=function(id){
   id=parseInt(id);
   const r=rows.find(x=>x.id===id);if(!r)return;
   r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];
   save();render();if(connected)pushRow(r);
-}
+};
 
 // MODAL NUEVA ENTRADA
 function openNewModal(){document.getElementById("new-overlay").classList.add("open");document.getElementById("new-err").textContent="";}
@@ -328,19 +347,7 @@ function addRow(){
 }
 
 // MODAL EDITAR ENTRADA
-function openEditModal(id){
-  id=parseInt(id);
-  const r=rows.find(x=>x.id===id);if(!r)return;
-  editingId=id;
-  document.getElementById("ed-fecha").value=r.fecha;
-  document.getElementById("ed-dia").value=r.dia;
-  document.getElementById("ed-red").value=r.red;
-  document.getElementById("ed-tipo").value=r.tipo;
-  document.getElementById("ed-copy").value=r.copy;
-  document.getElementById("ed-estado").value=r.estado;
-  document.getElementById("edit-err").textContent="";
-  document.getElementById("edit-overlay").classList.add("open");
-}
+function openEditModal(id){window.openEditModal(id);}
 function closeEditModal(){
   document.getElementById("edit-overlay").classList.remove("open");
   editingId=null;
@@ -364,13 +371,7 @@ function saveEdit(){
 }
 
 // ELIMINAR
-function deleteRow(id){
-  id=parseInt(id);
-  if(!confirm("¿Eliminar esta entrada?"))return;
-  rows=rows.filter(r=>r.id!==id);
-  save();render();
-  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado de Sheets")).catch(()=>notify("⚠️ Eliminado solo en local"));
-}
+function deleteRow(id){window.deleteRow(id);}
 
 // SHEETS
 async function pushRow(row){
