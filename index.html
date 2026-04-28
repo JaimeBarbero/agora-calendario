@@ -281,7 +281,7 @@ function render(){
       <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
       <div class="tipo">${esc(r.tipo)}</div>
       <div class="cprev">${esc(r.copy)}</div>
-      <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border};cursor:pointer" onclick="cycleEstado(${r.id})">${r.estado}</span>
+      <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}">${r.estado}</span>
       <div class="row-actions">
         <button class="editbtn" onclick="editRow(${r.id})">✏️</button>
         <button class="delbtn" onclick="delRow(${r.id})">✕</button>
