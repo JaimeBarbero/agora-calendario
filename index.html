@@ -225,20 +225,13 @@ async function initApp(){
   const saved=localStorage.getItem("agora-calendario");
   if(saved){try{rows=JSON.parse(saved);}catch(e){rows=[...INITIAL_DATA];}}
   else{rows=[...INITIAL_DATA];}
+  // Marcar como conectado sin llamar a Sheets al arrancar
+  connected=true;
+  document.getElementById("btn-connect").textContent="✅ Sheets conectado";
+  document.getElementById("btn-connect").className="btn btn-success";
+  document.getElementById("btn-sync").style.display="inline-block";
   render();
-  try{
-    const res=await fetch(PROXY);
-    const data=await res.json();
-    connected=true;
-    document.getElementById("btn-connect").textContent="✅ Sheets conectado";
-    document.getElementById("btn-connect").className="btn btn-success";
-    document.getElementById("btn-sync").style.display="inline-block";
-    if(data.ok&&data.rows&&data.rows.length>0){
-      rows=data.rows; save(); render(); notify("☁️ Sincronizado con Sheets");
-    } else {
-      fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"seed",rows})});
-    }
-  } catch(e){notify("⚠️ Sin conexión a Sheets — datos locales");}
+  notify("📋 Datos locales cargados · pulsa Sync para actualizar desde Sheets");
 }
 
 function buildFilters(){
