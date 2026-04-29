@@ -8,11 +8,12 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f5;color:#111;min-height:100vh}
 #login-screen{position:fixed;inset:0;background:#f5f5f5;z-index:999;display:flex;align-items:center;justify-content:center}
-.login-box{background:#fff;border-radius:16px;padding:40px;width:360px;max-width:90vw;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center}
+.login-box{background:#fff;border-radius:16px;padding:40px;width:380px;max-width:90vw;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center}
 .login-box h2{font-size:18px;font-weight:600;margin-bottom:6px}
-.login-box p{font-size:13px;color:#888;margin-bottom:24px}
-#pwd-input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;text-align:center;letter-spacing:.15em;margin-bottom:8px}
-#pwd-input:focus{outline:none;border-color:#111}
+.login-box p{font-size:13px;color:#888;margin-bottom:16px}
+.login-info{background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:16px;text-align:left;font-size:12px;color:#666;line-height:1.6}
+.login-input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px}
+.login-input:focus{outline:none;border-color:#111}
 #pwd-err{font-size:12px;color:red;min-height:18px;margin-bottom:10px}
 #pwd-btn{width:100%;padding:10px;background:#111;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer}
 #app{display:none}
@@ -22,6 +23,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .stats span{font-size:12px;font-weight:500}
 .hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;font-family:inherit}
+.btn:hover{opacity:.85}
 .btn-primary{background:#111;color:#fff;border-color:#111}
 .btn-success{background:#EDFAF3;color:#166534;border-color:#6EE7B7}
 .sync-msg{font-size:12px;color:#555}
@@ -46,7 +48,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .rcell{display:flex;align-items:center;gap:6px}
 .tipo{font-size:12px;color:#333}
 .cprev{font-size:12px;color:#555;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ebadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid;cursor:pointer;user-select:none;display:inline-block;white-space:nowrap}
+.ebadge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid;display:inline-block;white-space:nowrap}
 .row-actions{display:flex;gap:6px;align-items:center}
 .editbtn{font-size:13px;padding:3px 7px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;font-family:inherit}
 .delbtn{font-size:13px;padding:3px 7px;border-radius:6px;border:1px solid #fdd;background:#fff;cursor:pointer;color:#e53e3e;font-family:inherit}
@@ -61,6 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .fg textarea{resize:vertical;min-height:100px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-btns{display:flex;gap:8px;margin-top:18px}
+.log-item{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:8px;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -68,13 +71,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div id="login-screen">
   <div class="login-box">
     <h2>Ágora News</h2>
-    <p>Introduce tu nombre y la contraseña para acceder al calendario</p>
-    <div style="background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:16px;text-align:left;font-size:12px;color:#666;line-height:1.6">
-      ℹ️ <strong>¿Por qué pedimos tu nombre?</strong><br>
-      Para saber quién hizo cada cambio en el calendario — ediciones, nuevas entradas o eliminaciones quedan registradas con tu nombre durante 7 días.
-    </div>
-    <input type="text" id="usr-input" placeholder="Tu nombre" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px"/>
-    <input type="password" id="pwd-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()"/>
+    <p>Accede al calendario de contenidos</p>
+    <div class="login-info">ℹ️ <strong>¿Por qué pedimos tu nombre?</strong><br>Para saber quién hizo cada cambio en el calendario. Ediciones, nuevas entradas y eliminaciones quedan registradas con tu nombre durante 7 días.</div>
+    <input class="login-input" type="text" id="usr-input" placeholder="Tu nombre"/>
+    <input class="login-input" type="password" id="pwd-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()"/>
     <div id="pwd-err"></div>
     <button id="pwd-btn" onclick="login()">Entrar</button>
   </div>
@@ -95,8 +95,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div class="hbtns">
       <span class="sync-msg" id="sync-msg"></span>
       <button class="btn" id="btn-sync" style="display:none" onclick="syncSheets()">↻ Sync</button>
-      <button class="btn" onclick="showModal('new-modal')">+ Nueva entrada</button>
-      <button class="btn" onclick="showModal('log-modal')">📋 Historial</button>
+      <button class="btn" onclick="openModal('new-modal')">+ Nueva entrada</button>
+      <button class="btn" onclick="openModal('log-modal')">📋 Historial</button>
       <button class="btn btn-primary" id="btn-connect" onclick="toggleSetup()">Conectar Sheets</button>
     </div>
   </div>
@@ -112,17 +112,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div class="err" id="connect-err"></div>
   </div>
 
-  <!-- Modal historial -->
-  <div id="log-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
-    <div class="modal" style="width:620px">
-      <h3>Historial de cambios <span style="font-size:11px;color:#aaa;font-weight:400">(últimos 7 días)</span></h3>
-      <div id="log-list" style="margin-top:14px;max-height:400px;overflow-y:auto"></div>
-      <div class="modal-btns"><button class="btn" onclick="hideModal('log-modal')">Cerrar</button></div>
-    </div>
-  </div>
-
   <!-- Modal nueva entrada -->
-  <div id="new-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
+  <div id="new-modal" class="overlay">
     <div class="modal">
       <h3>Nueva entrada</h3>
       <div class="fgrid">
@@ -136,13 +127,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div class="err" id="new-err"></div>
       <div class="modal-btns">
         <button class="btn btn-primary" onclick="addRow()">Guardar</button>
-        <button class="btn" onclick="hideModal('new-modal')">Cancelar</button>
+        <button class="btn" onclick="closeModal('new-modal')">Cancelar</button>
       </div>
     </div>
   </div>
 
   <!-- Modal editar entrada -->
-  <div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center">
+  <div id="edit-modal" class="overlay">
     <div class="modal">
       <h3>Editar entrada</h3>
       <div class="fgrid">
@@ -156,8 +147,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div class="err" id="edit-err"></div>
       <div class="modal-btns">
         <button class="btn btn-primary" onclick="saveEdit()">Guardar cambios</button>
-        <button class="btn" onclick="hideModal('edit-modal')">Cancelar</button>
+        <button class="btn" onclick="closeModal('edit-modal')">Cancelar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal historial -->
+  <div id="log-modal" class="overlay">
+    <div class="modal" style="width:620px">
+      <h3>Historial de cambios <span style="font-size:11px;color:#aaa;font-weight:400">(últimos 7 días)</span></h3>
+      <div id="log-list" style="margin-top:14px;max-height:400px;overflow-y:auto"></div>
+      <div class="modal-btns"><button class="btn" onclick="closeModal('log-modal')">Cerrar</button></div>
     </div>
   </div>
 
@@ -170,19 +170,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
     <div id="tbody"></div>
   </div>
-  <p class="footer">Clic en estado para cambiarlo · ✏️ editar · ✕ eliminar</p>
+  <p class="footer">✏️ editar entrada · ✕ eliminar entrada</p>
 </div>
 </div>
 
 <script>
-const PROXY="https://eoquttk4j3kxens.m.pipedream.net";
-const PWD="puerta";
-const ESTADOS=["Borrador","Listo","Publicado"];
-const EC={Borrador:{bg:"#FEF9EC",color:"#92600A",border:"#F5D97A"},Listo:{bg:"#EBF3FF",color:"#1A56B0",border:"#93C5FD"},Publicado:{bg:"#EDFAF3",color:"#166534",border:"#6EE7B7"}};
-const RC={Instagram:{color:"#C13584",bg:"#FDF2F8",icon:"IG"},LinkedIn:{color:"#0077B5",bg:"#EBF5FB",icon:"LI"},"X (Twitter)":{color:"#1A1A1A",bg:"#F3F4F6",icon:"X"}};
-const REDES=["Todas","Instagram","LinkedIn","X (Twitter)"];
-const SEMANAS=["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
-const DATA=[
+// ── Constantes
+const PROXY = "https://eoquttk4j3kxens.m.pipedream.net";
+const PWD   = "puerta";
+const ESTADOS = ["Borrador","Listo","Publicado"];
+const EC = {
+  Borrador:  {bg:"#FEF9EC",color:"#92600A",border:"#F5D97A"},
+  Listo:     {bg:"#EBF3FF",color:"#1A56B0",border:"#93C5FD"},
+  Publicado: {bg:"#EDFAF3",color:"#166534",border:"#6EE7B7"}
+};
+const RC = {
+  Instagram:     {color:"#C13584",bg:"#FDF2F8",icon:"IG"},
+  LinkedIn:      {color:"#0077B5",bg:"#EBF5FB",icon:"LI"},
+  "X (Twitter)": {color:"#1A1A1A",bg:"#F3F4F6",icon:"X"}
+};
+const REDES   = ["Todas","Instagram","LinkedIn","X (Twitter)"];
+const SEMANAS = ["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
+const DATA = [
   {id:1,  fecha:"01/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Backstage",            copy:"Así montamos el escenario antes de que llegue el primer invitado. 30 segundos de puro backstage que no suelen ver. 🎬 #AgoraNEws #RealizacionEventos",estado:"Borrador"},
   {id:2,  fecha:"02/05",dia:"Vie",red:"LinkedIn",    tipo:"Post · Antes/Después",         copy:"Antes: un espacio vacío. Después: un evento corporativo para 300 personas. Te mostramos el proceso técnico detrás de cada producción. ¿Cuánto tarda realmente el montaje? 👇",estado:"Borrador"},
   {id:3,  fecha:"05/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tip técnico",          copy:"🎙️ Tip de la semana: si el audio en streaming suena hueco, revisa el gain staging antes del encoder. Un ajuste de 3dB puede cambiar la experiencia del espectador. #StreamingPro",estado:"Borrador"},
@@ -213,37 +222,85 @@ const DATA=[
   {id:20, fecha:"30/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Cierre mes",            copy:"MAYO 2026 ✅ Nos vemos en junio. 🎬 #AgoraNEws #Recap",estado:"Borrador"},
 ];
 
-let rows=[], connected=false, filterRed="Todas", filterSem="Todas", editingId=null;
+// ── Estado global
+var rows = [];
+var connected = false;
+var filterRed = "Todas";
+var filterSem = "Todas";
+var editingId = null;
+var currentUser = "";
+var sheetsLogs = [];
 
+// ── Utilidades
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function notify(m,ms=3000){const el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(()=>el.textContent="",ms);}}
+function notify(m,ms){var el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(function(){el.textContent="";},ms||3000);}}
 function save(){localStorage.setItem("agora-cal",JSON.stringify(rows));}
-function semana(f){const d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
+function semana(f){var d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
+function normalizeRows(r){return r.map(function(x){return Object.assign({},x,{id:parseInt(x.id)});});}
 
+// ── Log
+function addLog(accion, entrada){
+  var logs = getLogs();
+  logs.push({usuario:currentUser, accion:accion, entrada:entrada, ts:Date.now()});
+  localStorage.setItem("agora-log", JSON.stringify(logs));
+}
+function getLogs(){
+  var raw = localStorage.getItem("agora-log");
+  var logs = raw ? JSON.parse(raw) : [];
+  var cutoff = Date.now() - 7*24*60*60*1000;
+  return logs.filter(function(l){return l.ts > cutoff;});
+}
+function renderLog(){
+  var logs = sheetsLogs.length ? sheetsLogs : getLogs().reverse().map(function(l){
+    var d = new Date(l.ts);
+    var fecha = d.getDate().toString().padStart(2,"0")+"/"+(d.getMonth()+1).toString().padStart(2,"0")+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+    return Object.assign({},l,{fecha:fecha});
+  });
+  var el = document.getElementById("log-list");
+  if(!logs.length){el.innerHTML='<p style="font-size:13px;color:#aaa;text-align:center;padding:20px">No hay cambios registrados.</p>';return;}
+  var colors = {editó:"#EBF3FF",añadió:"#EDFAF3",eliminó:"#FEF2F2"};
+  el.innerHTML = logs.map(function(l){
+    return '<div class="log-item" style="background:'+(colors[l.accion]||"#f9f9f9")+'">'
+      +'<div style="flex:1"><span style="font-size:12px;font-weight:600;color:#111">'+esc(l.usuario)+'</span>'
+      +' <span style="font-size:12px;color:#555">'+l.accion+'</span>'
+      +' <span style="font-size:12px;color:#111;font-style:italic">'+esc(l.entrada)+'</span></div>'
+      +'<span style="font-size:11px;color:#aaa;white-space:nowrap">'+esc(l.fecha)+'</span></div>';
+  }).join("");
+}
+
+// ── Modales
+function openModal(id){
+  if(id==="log-modal") renderLog();
+  document.getElementById(id).style.display="flex";
+}
+function closeModal(id){document.getElementById(id).style.display="none";}
+function toggleSetup(){var p=document.getElementById("setup-panel");p.style.display=p.style.display==="none"?"block":"none";}
+
+// ── Login
 function login(){
-  const usr=document.getElementById("usr-input").value.trim();
-  const pwd=document.getElementById("pwd-input").value;
-  if(!usr){document.getElementById("pwd-err").textContent="Por favor introduce tu nombre.";return;}
+  var usr = document.getElementById("usr-input").value.trim();
+  var pwd = document.getElementById("pwd-input").value;
+  var err = document.getElementById("pwd-err");
+  if(!usr){err.textContent="Por favor introduce tu nombre.";return;}
   if(pwd===PWD){
-    currentUser=usr;
+    currentUser = usr;
     sessionStorage.setItem("ok","1");
     sessionStorage.setItem("usr",usr);
     document.getElementById("login-screen").style.display="none";
     document.getElementById("app").style.display="block";
     start();
   } else {
-    document.getElementById("pwd-err").textContent="Contraseña incorrecta";
+    err.textContent="Contraseña incorrecta";
     document.getElementById("pwd-input").value="";
-    setTimeout(()=>document.getElementById("pwd-err").textContent="",2500);
+    setTimeout(function(){err.textContent="";},2500);
   }
 }
 
-function normalizeRows(r){return r.map(x=>({...x,id:parseInt(x.id)}));}
-
+// ── Arranque
 function start(){
-  const s=localStorage.getItem("agora-cal");
-  rows=s?normalizeRows(JSON.parse(s)):normalizeRows([...DATA]);
-  connected=true;
+  var s = localStorage.getItem("agora-cal");
+  rows = s ? normalizeRows(JSON.parse(s)) : normalizeRows(DATA.slice());
+  connected = true;
   document.getElementById("btn-connect").textContent="✅ Sheets conectado";
   document.getElementById("btn-connect").className="btn btn-success";
   document.getElementById("btn-sync").style.display="inline-block";
@@ -251,55 +308,52 @@ function start(){
   notify("📋 Datos cargados · pulsa Sync para actualizar");
 }
 
-function showModal(id){document.getElementById(id).style.display="flex";}
-function hideModal(id){document.getElementById(id).style.display="none";}
-function toggleSetup(){const p=document.getElementById("setup-panel");p.style.display=p.style.display==="none"?"block":"none";}
-
+// ── Filtros y stats
 function buildFilters(){
-  document.getElementById("filter-red").innerHTML=REDES.map(r=>`<button class="fbtn${r===filterRed?" on":""}" onclick="filterRed='${r}';render()">${r}</button>`).join("");
-  document.getElementById("filter-sem").innerHTML=SEMANAS.map(s=>`<button class="fbtn${s===filterSem?" on":""}" onclick="filterSem='${s}';render()">${s}</button>`).join("");
+  document.getElementById("filter-red").innerHTML=REDES.map(function(r){
+    return '<button class="fbtn'+(r===filterRed?" on":"")+'" onclick="filterRed=\''+r+'\';render()">'+r+'</button>';
+  }).join("");
+  document.getElementById("filter-sem").innerHTML=SEMANAS.map(function(s){
+    return '<button class="fbtn'+(s===filterSem?" on":"")+'" onclick="filterSem=this.dataset.v;render()" data-v="'+s+'">'+s+'</button>';
+  }).join("");
 }
-
 function updateStats(){
-  const t=rows.length,p=rows.filter(r=>r.estado==="Publicado").length,l=rows.filter(r=>r.estado==="Listo").length,b=rows.filter(r=>r.estado==="Borrador").length;
+  var t=rows.length,p=rows.filter(function(r){return r.estado==="Publicado";}).length,
+      l=rows.filter(function(r){return r.estado==="Listo";}).length,
+      b=rows.filter(function(r){return r.estado==="Borrador";}).length;
   document.getElementById("s-total").textContent=t+" entradas";
   document.getElementById("s-pub").textContent=p+" publicadas";
   document.getElementById("s-list").textContent=l+" listas";
   document.getElementById("s-bor").textContent=b+" borradores";
 }
 
+// ── Render tabla
 function render(){
-  buildFilters();updateStats();
-  const f=rows.filter(r=>(filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem));
-  const tb=document.getElementById("tbody");
-  if(!f.length){tb.innerHTML='<div class="empty">Sin entradas.</div>';return;}
-  tb.innerHTML=f.map(r=>{
-    const rc=RC[r.red]||{color:"#888",bg:"#eee",icon:"?"};
-    const ec=EC[r.estado]||EC.Borrador;
-    return`<div class="row"><div class="rmain">
-      <div><div class="fd">${r.fecha}</div><div class="fw">${r.dia}</div></div>
-      <div class="rcell"><span class="rbadge" style="background:${rc.bg};color:${rc.color};border-color:${rc.color}44">${rc.icon}</span><span class="rname">${r.red}</span></div>
-      <div class="tipo">${esc(r.tipo)}</div>
-      <div class="cprev">${esc(r.copy)}</div>
-      <span class="ebadge" style="background:${ec.bg};color:${ec.color};border-color:${ec.border}">${r.estado}</span>
-      <div class="row-actions">
-        <button class="editbtn" onclick="editRow(${r.id})">✏️</button>
-        <button class="delbtn" onclick="delRow(${r.id})">✕</button>
-      </div>
-    </div></div>`;
+  buildFilters(); updateStats();
+  var filtered=rows.filter(function(r){
+    return (filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem);
+  });
+  var tb=document.getElementById("tbody");
+  if(!filtered.length){tb.innerHTML='<div class="empty">Sin entradas.</div>';return;}
+  tb.innerHTML=filtered.map(function(r){
+    var rc=RC[r.red]||{color:"#888",bg:"#eee",icon:"?"};
+    var ec=EC[r.estado]||EC.Borrador;
+    return '<div class="row"><div class="rmain">'
+      +'<div><div class="fd">'+r.fecha+'</div><div class="fw">'+r.dia+'</div></div>'
+      +'<div class="rcell"><span class="rbadge" style="background:'+rc.bg+';color:'+rc.color+';border-color:'+rc.color+'44">'+rc.icon+'</span><span class="rname">'+r.red+'</span></div>'
+      +'<div class="tipo">'+esc(r.tipo)+'</div>'
+      +'<div class="cprev">'+esc(r.copy)+'</div>'
+      +'<span class="ebadge" style="background:'+ec.bg+';color:'+ec.color+';border-color:'+ec.border+'">'+r.estado+'</span>'
+      +'<div class="row-actions">'
+      +'<button class="editbtn" onclick="editRow('+r.id+')">✏️</button>'
+      +'<button class="delbtn" onclick="delRow('+r.id+')">✕</button>'
+      +'</div></div></div>';
   }).join("");
 }
 
-function cycleEstado(id){
-  const r=rows.find(x=>x.id===id);if(!r)return;
-  const prev=r.estado;
-  r.estado=ESTADOS[(ESTADOS.indexOf(r.estado)+1)%ESTADOS.length];
-  addLog("editó",`estado de "${r.fecha} · ${r.red}" de ${prev} a ${r.estado}`);
-  save();render();if(connected)push(r);
-}
-
+// ── Editar
 function editRow(id){
-  const r=rows.find(x=>x.id===id);if(!r)return;
+  var r=rows.find(function(x){return x.id===id;});if(!r)return;
   editingId=id;
   document.getElementById("ed-fecha").value=r.fecha;
   document.getElementById("ed-dia").value=r.dia;
@@ -308,93 +362,102 @@ function editRow(id){
   document.getElementById("ed-copy").value=r.copy;
   document.getElementById("ed-estado").value=r.estado;
   document.getElementById("edit-err").textContent="";
-  showModal("edit-modal");
+  openModal("edit-modal");
 }
-
 function saveEdit(){
-  const r=rows.find(x=>x.id===editingId);if(!r)return;
-  const fecha=document.getElementById("ed-fecha").value.trim();
-  const tipo=document.getElementById("ed-tipo").value.trim();
-  const copy=document.getElementById("ed-copy").value.trim();
+  var r=rows.find(function(x){return x.id===editingId;});if(!r)return;
+  var fecha=document.getElementById("ed-fecha").value.trim();
+  var tipo=document.getElementById("ed-tipo").value.trim();
+  var copy=document.getElementById("ed-copy").value.trim();
   if(!fecha||!tipo||!copy){document.getElementById("edit-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
   r.fecha=fecha;r.dia=document.getElementById("ed-dia").value.trim();
   r.red=document.getElementById("ed-red").value;r.tipo=tipo;r.copy=copy;
   r.estado=document.getElementById("ed-estado").value;
-  rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();hideModal("edit-modal");render();
-  const log={usuario:currentUser,accion:"editó",entrada:`${r.fecha} · ${r.red} · ${r.tipo}`};
-  addLog(log.accion,log.entrada);
-  if(connected)push(r,log);
+  rows.sort(function(a,b){return a.fecha.localeCompare(b.fecha);});
+  addLog("editó", r.fecha+" · "+r.red+" · "+r.tipo);
+  save();closeModal("edit-modal");render();
+  if(connected) push(r, {usuario:currentUser,accion:"editó",entrada:r.fecha+" · "+r.red+" · "+r.tipo});
 }
 
+// ── Eliminar
 function delRow(id){
   if(!confirm("¿Eliminar esta entrada?"))return;
-  const r=rows.find(x=>x.id===id);
-  rows=rows.filter(x=>x.id!==id);save();render();
-  if(r){
-    const log={usuario:currentUser,accion:"eliminó",entrada:`${r.fecha} · ${r.red} · ${r.tipo}`};
-    addLog(log.accion,log.entrada);
-    if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id,log})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
+  var r=rows.find(function(x){return x.id===id;});
+  rows=rows.filter(function(x){return x.id!==id;});
+  if(r) addLog("eliminó", r.fecha+" · "+r.red+" · "+r.tipo);
+  save();render();
+  if(connected&&r){
+    fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"delete",id:id,log:{usuario:currentUser,accion:"eliminó",entrada:r.fecha+" · "+r.red+" · "+r.tipo}})
+    }).then(function(){notify("🗑️ Eliminado");}).catch(function(){});
   }
 }
 
+// ── Nueva entrada
 function addRow(){
-  const fecha=document.getElementById("nw-fecha").value.trim();
-  const tipo=document.getElementById("nw-tipo").value.trim();
-  const copy=document.getElementById("nw-copy").value.trim();
+  var fecha=document.getElementById("nw-fecha").value.trim();
+  var tipo=document.getElementById("nw-tipo").value.trim();
+  var copy=document.getElementById("nw-copy").value.trim();
   if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
-  const nr={id:Date.now(),fecha,dia:document.getElementById("nw-dia").value.trim(),red:document.getElementById("nw-red").value,tipo,copy,estado:document.getElementById("nw-estado").value};
-  rows.push(nr);rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();hideModal("new-modal");render();
-  const log={usuario:currentUser,accion:"añadió",entrada:`${nr.fecha} · ${nr.red} · ${nr.tipo}`};
-  addLog(log.accion,log.entrada);
-  if(connected)push(nr,log);
-  ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(id=>document.getElementById(id).value="");
+  var nr={id:Date.now(),fecha:fecha,dia:document.getElementById("nw-dia").value.trim(),
+    red:document.getElementById("nw-red").value,tipo:tipo,copy:copy,
+    estado:document.getElementById("nw-estado").value};
+  addLog("añadió", nr.fecha+" · "+nr.red+" · "+nr.tipo);
+  rows.push(nr);rows.sort(function(a,b){return a.fecha.localeCompare(b.fecha);});
+  save();closeModal("new-modal");render();
+  if(connected) push(nr, {usuario:currentUser,accion:"añadió",entrada:nr.fecha+" · "+nr.red+" · "+nr.tipo});
+  ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(function(id){document.getElementById(id).value="";});
 }
 
-async function push(row, logEntry){
-  const body={action:"upsert", row};
-  if(logEntry) body.log=logEntry;
-  try{
-    await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    notify("☁️ Guardado en Sheets");
-  } catch{ notify("⚠️ Solo guardado en local"); }
+// ── Push a Sheets
+function push(row, log){
+  var body={action:"upsert",row:row};
+  if(log) body.log=log;
+  fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+    .then(function(){notify("☁️ Guardado en Sheets");})
+    .catch(function(){notify("⚠️ Solo guardado en local");});
 }
 
-async function pushLog(logEntry){
-  try{
-    await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"log", log:logEntry})});
-  } catch(e){}
-}
-
-async function syncSheets(){
+// ── Sync desde Sheets
+function syncSheets(){
   document.getElementById("btn-sync").textContent="Sincronizando…";
-  try{
-    const res=await fetch(PROXY);const d=await res.json();
-    if(d.ok&&d.rows&&d.rows.length){
-      rows=normalizeRows(d.rows);save();render();
-      if(d.logs)sheetsLogs=d.logs;
-      notify("✅ Sincronizado con Sheets");
-    } else notify("⚠️ Sin datos en Sheets");
-  }catch(e){notify("❌ Error: "+e.message);}
-  document.getElementById("btn-sync").textContent="↻ Sync";
+  fetch(PROXY)
+    .then(function(res){return res.json();})
+    .then(function(d){
+      if(d.ok&&d.rows&&d.rows.length){
+        rows=normalizeRows(d.rows);save();render();
+        if(d.logs) sheetsLogs=d.logs;
+        notify("✅ Sincronizado con Sheets");
+      } else notify("⚠️ Sin datos en Sheets");
+    })
+    .catch(function(e){notify("❌ Error: "+e.message);})
+    .finally(function(){document.getElementById("btn-sync").textContent="↻ Sync";});
 }
 
-async function doConnect(){
-  const err=document.getElementById("connect-err");
+// ── Conectar Sheets
+function doConnect(){
+  var err=document.getElementById("connect-err");
   err.textContent="";
-  try{
-    const res=await fetch(PROXY);const d=await res.json();
-    connected=true;
-    document.getElementById("setup-panel").style.display="none";
-    document.getElementById("btn-connect").textContent="✅ Sheets conectado";
-    document.getElementById("btn-connect").className="btn btn-success";
-    document.getElementById("btn-sync").style.display="inline-block";
-    if(d.ok&&d.rows&&d.rows.length){rows=normalizeRows(d.rows);save();render();notify("✅ Conectado");}
-    else{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"seed",rows})});notify("✅ Datos volcados a Sheets");}
-  }catch(e){err.textContent="Error: "+e.message;}
+  fetch(PROXY)
+    .then(function(res){return res.json();})
+    .then(function(d){
+      connected=true;
+      document.getElementById("setup-panel").style.display="none";
+      document.getElementById("btn-connect").textContent="✅ Sheets conectado";
+      document.getElementById("btn-connect").className="btn btn-success";
+      document.getElementById("btn-sync").style.display="inline-block";
+      if(d.ok&&d.rows&&d.rows.length){
+        rows=normalizeRows(d.rows);save();render();notify("✅ Conectado");
+      } else {
+        fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({action:"seed",rows:rows})
+        }).then(function(){notify("✅ Datos volcados a Sheets");});
+      }
+    })
+    .catch(function(e){err.textContent="Error: "+e.message;});
 }
 
+// ── Inicio
 if(sessionStorage.getItem("ok")==="1"){
   currentUser=sessionStorage.getItem("usr")||"Usuario";
   document.getElementById("login-screen").style.display="none";
