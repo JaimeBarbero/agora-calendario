@@ -329,8 +329,9 @@ function delRow(id){
   if(!confirm("¿Eliminar esta entrada?"))return;
   const r=rows.find(x=>x.id===id);
   rows=rows.filter(x=>x.id!==id);save();render();
+  const log=r?{usuario:currentUser,accion:"eliminó",entrada:`"${r.fecha} · ${r.red} · ${r.tipo}"`}:null;
   try{if(r)addLog("eliminó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);}catch(e){}
-  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
+  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id,log})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
 }
 
 function addRow(){
@@ -346,7 +347,9 @@ function addRow(){
 }
 
 async function push(row){
-  try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"upsert",row})});notify("☁️ Guardado en Sheets");}
+  const body={action:"upsert",row};
+  if(pendingLog){body.log=pendingLog;pendingLog=null;}
+  try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});notify("☁️ Guardado en Sheets");}
   catch{notify("⚠️ Solo guardado en local");}
 }
 
@@ -354,8 +357,11 @@ async function syncSheets(){
   document.getElementById("btn-sync").textContent="Sincronizando…";
   try{
     const res=await fetch(PROXY);const d=await res.json();
-    if(d.ok&&d.rows&&d.rows.length){rows=normalizeRows(d.rows);save();render();notify("✅ Sincronizado con Sheets");}
-    else notify("⚠️ Sin datos en Sheets");
+    if(d.ok&&d.rows&&d.rows.length){
+      rows=normalizeRows(d.rows);save();render();
+      if(d.logs)sheetsLogs=d.logs;
+      notify("✅ Sincronizado con Sheets");
+    } else notify("⚠️ Sin datos en Sheets");
   }catch(e){notify("❌ Error: "+e.message);}
   document.getElementById("btn-sync").textContent="↻ Sync";
 }
