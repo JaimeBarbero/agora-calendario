@@ -321,17 +321,21 @@ function saveEdit(){
   r.red=document.getElementById("ed-red").value;r.tipo=tipo;r.copy=copy;
   r.estado=document.getElementById("ed-estado").value;
   rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();hideModal("edit-modal");render();if(connected)push(r);
-  try{addLog("editó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);}catch(e){}
+  save();hideModal("edit-modal");render();
+  const log={usuario:currentUser,accion:"editó",entrada:`${r.fecha} · ${r.red} · ${r.tipo}`};
+  addLog(log.accion,log.entrada);
+  if(connected)push(r,log);
 }
 
 function delRow(id){
   if(!confirm("¿Eliminar esta entrada?"))return;
   const r=rows.find(x=>x.id===id);
   rows=rows.filter(x=>x.id!==id);save();render();
-  const log=r?{usuario:currentUser,accion:"eliminó",entrada:`"${r.fecha} · ${r.red} · ${r.tipo}"`}:null;
-  try{if(r)addLog("eliminó",`"${r.fecha} · ${r.red} · ${r.tipo}"`);}catch(e){}
-  if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id,log})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
+  if(r){
+    const log={usuario:currentUser,accion:"eliminó",entrada:`${r.fecha} · ${r.red} · ${r.tipo}`};
+    addLog(log.accion,log.entrada);
+    if(connected)fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"delete",id,log})}).then(()=>notify("🗑️ Eliminado")).catch(()=>{});
+  }
 }
 
 function addRow(){
@@ -341,16 +345,26 @@ function addRow(){
   if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
   const nr={id:Date.now(),fecha,dia:document.getElementById("nw-dia").value.trim(),red:document.getElementById("nw-red").value,tipo,copy,estado:document.getElementById("nw-estado").value};
   rows.push(nr);rows.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  save();hideModal("new-modal");render();if(connected)push(nr);
-  try{addLog("añadió",`"${nr.fecha} · ${nr.red} · ${nr.tipo}"`);}catch(e){}
+  save();hideModal("new-modal");render();
+  const log={usuario:currentUser,accion:"añadió",entrada:`${nr.fecha} · ${nr.red} · ${nr.tipo}`};
+  addLog(log.accion,log.entrada);
+  if(connected)push(nr,log);
   ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(id=>document.getElementById(id).value="");
 }
 
-async function push(row){
-  const body={action:"upsert",row};
-  if(pendingLog){body.log=pendingLog;pendingLog=null;}
-  try{await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});notify("☁️ Guardado en Sheets");}
-  catch{notify("⚠️ Solo guardado en local");}
+async function push(row, logEntry){
+  const body={action:"upsert", row};
+  if(logEntry) body.log=logEntry;
+  try{
+    await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    notify("☁️ Guardado en Sheets");
+  } catch{ notify("⚠️ Solo guardado en local"); }
+}
+
+async function pushLog(logEntry){
+  try{
+    await fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"log", log:logEntry})});
+  } catch(e){}
 }
 
 async function syncSheets(){
