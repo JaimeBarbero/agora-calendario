@@ -12,10 +12,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .login-box h2{font-size:18px;font-weight:600;margin-bottom:6px}
 .login-box p{font-size:13px;color:#888;margin-bottom:16px}
 .login-info{background:#f9f9f9;border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:16px;text-align:left;font-size:12px;color:#666;line-height:1.6}
-.login-input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px}
+.login-input{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px;display:block}
 .login-input:focus{outline:none;border-color:#111}
 #pwd-err{font-size:12px;color:red;min-height:18px;margin-bottom:10px}
 #pwd-btn{width:100%;padding:10px;background:#111;color:#fff;border:none;border-radius:8px;font-size:14px;font-family:inherit;cursor:pointer}
+#pwd-btn:hover{background:#333}
 #app{display:none}
 .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
 .header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px}
@@ -27,6 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .btn-primary{background:#111;color:#fff;border-color:#111}
 .btn-success{background:#EDFAF3;color:#166534;border-color:#6EE7B7}
 .sync-msg{font-size:12px;color:#555}
+.notice{background:#FEF9EC;border:1px solid #F5D97A;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:#92600A;line-height:1.8}
 .setup{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:20px;margin-bottom:20px}
 .setup h3{font-size:14px;font-weight:600;margin-bottom:12px}
 .setup ol{padding-left:18px;font-size:13px;color:#555;line-height:2.2;margin-bottom:16px}
@@ -60,6 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
 .fg label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em}
 .fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#111}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#111}
 .fg textarea{resize:vertical;min-height:100px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-btns{display:flex;gap:8px;margin-top:18px}
@@ -68,6 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <h2>Ágora News</h2>
@@ -80,21 +84,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
   </div>
 </div>
 
+<!-- APP -->
 <div id="app">
 <div class="wrap">
+
+  <!-- Header -->
   <div class="header">
     <div>
       <h1 style="font-size:20px;font-weight:600">Calendario de contenidos <span style="font-size:13px;color:#888;font-weight:400">· Ágora News · Mayo 2026</span></h1>
       <div class="stats">
         <span id="s-total" style="color:#888"></span>
-        <span id="s-pub" style="color:#166534"></span>
-        <span id="s-list" style="color:#1A56B0"></span>
-        <span id="s-bor" style="color:#92600A"></span>
+        <span id="s-pub"   style="color:#166534"></span>
+        <span id="s-list"  style="color:#1A56B0"></span>
+        <span id="s-bor"   style="color:#92600A"></span>
       </div>
     </div>
     <div class="hbtns">
       <span class="sync-msg" id="sync-msg"></span>
-      <span id="credit-counter" style="font-size:12px;color:#888;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:20px;padding:4px 12px">⚡ 0 créditos usados este mes</span>
+      <span id="credit-counter" style="font-size:12px;color:#555;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:20px;padding:4px 12px">⚡ 0 créditos usados</span>
       <button class="btn" id="btn-sync" style="display:none" onclick="syncSheets()">↻ Sync</button>
       <button class="btn" onclick="openModal('new-modal')">+ Nueva entrada</button>
       <button class="btn" onclick="openModal('log-modal')">📋 Historial</button>
@@ -102,10 +109,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
   </div>
 
+  <!-- Aviso de uso -->
+  <div class="notice">
+    <strong>💡 Cómo usar el calendario correctamente</strong><br>
+    • <strong>Al entrar</strong>, pulsa siempre <strong>↻ Sync</strong> para cargar los últimos cambios de Google Sheets antes de empezar a trabajar.<br>
+    • <strong>Al editar</strong>, si necesitas modificar varios campos de una entrada hazlo todo de una vez antes de pulsar "Guardar cambios". Cada guardado consume <strong>1 crédito</strong> de sincronización (límite: 100/mes).<br>
+    • <strong>⚠️ Sin créditos disponibles</strong>, los cambios solo se guardan en tu navegador y no llegarán a Google Sheets ni serán visibles para el resto del equipo. En ese caso, edita directamente en Google Sheets hasta que los créditos se renueven el 1 de cada mes.
+  </div>
+
+  <!-- Setup Sheets -->
   <div id="setup-panel" style="display:none" class="setup">
     <h3>Conectar con Google Sheets</h3>
     <ol>
-      <li>Asegúrate de que Pipedream está <strong>Active</strong>.</li>
+      <li>Asegúrate de que el workflow de Pipedream está en estado <strong>Active</strong>.</li>
       <li>Ejecuta <strong>cargarDatosIniciales()</strong> en Apps Script.</li>
       <li>Pulsa <strong>Conectar</strong>.</li>
     </ol>
@@ -120,11 +136,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div class="fgrid">
         <div class="fg"><label>Fecha</label><input id="nw-fecha" placeholder="01/05"/></div>
         <div class="fg"><label>Día</label><input id="nw-dia" placeholder="Lun"/></div>
-        <div class="fg"><label>Red social</label><select id="nw-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select></div>
+        <div class="fg"><label>Red social</label>
+          <select id="nw-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select>
+        </div>
         <div class="fg"><label>Tipo</label><input id="nw-tipo" placeholder="Reel · Backstage"/></div>
       </div>
       <div class="fg"><label>Copy</label><textarea id="nw-copy" rows="4"></textarea></div>
-      <div class="fg"><label>Estado</label><select id="nw-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select></div>
+      <div class="fg"><label>Estado</label>
+        <select id="nw-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select>
+      </div>
       <div class="err" id="new-err"></div>
       <div class="modal-btns">
         <button class="btn btn-primary" onclick="addRow()">Guardar</button>
@@ -140,11 +160,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div class="fgrid">
         <div class="fg"><label>Fecha</label><input id="ed-fecha"/></div>
         <div class="fg"><label>Día</label><input id="ed-dia"/></div>
-        <div class="fg"><label>Red social</label><select id="ed-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select></div>
+        <div class="fg"><label>Red social</label>
+          <select id="ed-red"><option>Instagram</option><option>LinkedIn</option><option>X (Twitter)</option></select>
+        </div>
         <div class="fg"><label>Tipo</label><input id="ed-tipo"/></div>
       </div>
       <div class="fg"><label>Copy</label><textarea id="ed-copy" rows="5"></textarea></div>
-      <div class="fg"><label>Estado</label><select id="ed-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select></div>
+      <div class="fg"><label>Estado</label>
+        <select id="ed-estado"><option>Borrador</option><option>Listo</option><option>Publicado</option></select>
+      </div>
       <div class="err" id="edit-err"></div>
       <div class="modal-btns">
         <button class="btn btn-primary" onclick="saveEdit()">Guardar cambios</button>
@@ -162,16 +186,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
   </div>
 
-  <div style="background:#FEF9EC;border:1px solid #F5D97A;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:#92600A;line-height:1.8">
-    <strong>💡 Cómo usar el calendario correctamente</strong><br>
-    • <strong>Al entrar</strong>, pulsa siempre <strong>↻ Sync</strong> para cargar los últimos cambios de Google Sheets antes de empezar a trabajar.<br>
-    • <strong>Al editar</strong>, si necesitas modificar varios campos de una entrada hazlo todo de una vez antes de pulsar "Guardar cambios". Cada guardado consume <strong>1 crédito</strong> de sincronización (límite: 100/mes).<br>
-    • <strong>⚠️ Sin créditos disponibles</strong>, los cambios solo se guardan en tu navegador y no llegarán a Google Sheets ni serán visibles para el resto del equipo. En ese caso, edita directamente en Google Sheets hasta que los créditos se renueven el 1 de cada mes.
-  </div>
-
+  <!-- Filtros -->
   <div class="filters" id="filter-red"></div>
   <div class="filters" id="filter-sem"></div>
 
+  <!-- Tabla -->
   <div class="table">
     <div class="thead">
       <span>Fecha</span><span>Red social</span><span>Tipo</span><span>Copy</span><span>Estado</span><span>Acciones</span>
@@ -183,67 +202,88 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 </div>
 
 <script>
-// ── Constantes
-const PROXY = "https://eoquttk4j3kxens.m.pipedream.net";
-const PWD   = "puerta";
-const ESTADOS = ["Borrador","Listo","Publicado"];
-const EC = {
+var PROXY   = "https://eoquttk4j3kxens.m.pipedream.net";
+var PWD     = "puerta";
+var ESTADOS = ["Borrador","Listo","Publicado"];
+var EC = {
   Borrador:  {bg:"#FEF9EC",color:"#92600A",border:"#F5D97A"},
   Listo:     {bg:"#EBF3FF",color:"#1A56B0",border:"#93C5FD"},
   Publicado: {bg:"#EDFAF3",color:"#166534",border:"#6EE7B7"}
 };
-const RC = {
+var RC = {
   Instagram:     {color:"#C13584",bg:"#FDF2F8",icon:"IG"},
   LinkedIn:      {color:"#0077B5",bg:"#EBF5FB",icon:"LI"},
   "X (Twitter)": {color:"#1A1A1A",bg:"#F3F4F6",icon:"X"}
 };
-const REDES   = ["Todas","Instagram","LinkedIn","X (Twitter)"];
-const SEMANAS = ["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
-const DATA = [
-  {id:1,  fecha:"01/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Backstage",            copy:"Así montamos el escenario antes de que llegue el primer invitado. 30 segundos de puro backstage que no suelen ver. 🎬 #AgoraNEws #RealizacionEventos",estado:"Borrador"},
-  {id:2,  fecha:"02/05",dia:"Vie",red:"LinkedIn",    tipo:"Post · Antes/Después",         copy:"Antes: un espacio vacío. Después: un evento corporativo para 300 personas. Te mostramos el proceso técnico detrás de cada producción. ¿Cuánto tarda realmente el montaje? 👇",estado:"Borrador"},
-  {id:3,  fecha:"05/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tip técnico",          copy:"🎙️ Tip de la semana: si el audio en streaming suena hueco, revisa el gain staging antes del encoder. Un ajuste de 3dB puede cambiar la experiencia del espectador. #StreamingPro",estado:"Borrador"},
-  {id:4,  fecha:"07/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Tips",              copy:"3 errores de iluminación que arruinan un evento (y cómo evitarlos) ➡️ Desliza y toma nota. 💡 #AgoraNEws #EventosCorporativos",estado:"Borrador"},
-  {id:5,  fecha:"08/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Detrás de cada streaming profesional hay un equipo técnico que lleva horas configurando antes de que todo parezca fácil. eventos@agoranews.net",estado:"Borrador"},
-  {id:6,  fecha:"09/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Evento recap",          copy:"RECAP DEL EVENTO 🔥 Realización multicámara, streaming en directo y 0 imprevistos técnicos. Así es Ágora News. #Streaming #Eventos",estado:"Borrador"},
-  {id:21, fecha:"11/05",dia:"Lun",red:"Instagram",   tipo:"Story · Montaje",              copy:"STORY — MADBITCOIN CBA 🔧 Montando en el Círculo de Bellas Artes. Texto overlay: Preparando la magia detrás del escenario + sticker CBA Madrid.",estado:"Borrador"},
-  {id:22, fecha:"11/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Tiempo real",          copy:"🔧 Montaje en curso para @MADBITCOIN_CBA en el Círculo de Bellas Artes. Multicámara y streaming listos. #RealizacionEventos",estado:"Borrador"},
-  {id:23, fecha:"11/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Previa evento",         copy:"Mañana producimos en el Círculo de Bellas Artes de Madrid. Montaje técnico completo: cámaras, sonido e iluminación. eventos@agoranews.net",estado:"Borrador"},
-  {id:24, fecha:"12/05",dia:"Mar",red:"Instagram",   tipo:"Story · Evento directo",       copy:"STORY — MADBITCOIN CBA 🎥 En directo desde el Círculo de Bellas Artes + mención @MADBITCOIN_CBA.",estado:"Borrador"},
-  {id:7,  fecha:"12/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Durante evento",       copy:"📹 En producción para @MADBITCOIN_CBA desde el Círculo de Bellas Artes. 🎙️ Streaming · 📷 Multicámara · 🔊 Sonido profesional. #StreamingPro",estado:"Borrador"},
-  {id:8,  fecha:"13/05",dia:"Mié",red:"Instagram",   tipo:"Carrusel · Equipo",            copy:"El equipo que hace posible lo imposible. 🎥 Las personas detrás de cámara en cada producción de Ágora News. #Equipo #AgoraNEws",estado:"Borrador"},
-  {id:9,  fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Carrusel · Caso técnico",      copy:"3 claves que aprendimos produciendo eventos para instituciones públicas. Aquí los detalles técnicos que marcan la diferencia.",estado:"Borrador"},
-  {id:25, fecha:"14/05",dia:"Jue",red:"Instagram",   tipo:"Carrusel · Recap MADBITCOIN",  copy:"MADBITCOIN CBA en el Círculo de Bellas Artes ✅ 📍CBA Madrid · 📡Streaming · 🎥Multicámara #AgoraNEws #MADBITCOIN",estado:"Borrador"},
-  {id:26, fecha:"14/05",dia:"Jue",red:"LinkedIn",    tipo:"Post · Recap MADBITCOIN",      copy:"El martes producimos MADBITCOIN CBA en el Círculo de Bellas Artes. Realización multicámara y streaming profesional. eventos@agoranews.net",estado:"Borrador"},
-  {id:10, fecha:"15/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Antes/Después",         copy:"ANTES vs DESPUÉS ⚡ El mismo espacio, dos realidades. #MontajeEventos #AgoraNEws",estado:"Borrador"},
-  {id:11, fecha:"16/05",dia:"Vie",red:"X (Twitter)", tipo:"Tweet · Encuesta",             copy:"🎤 ¿Qué formato de evento es más exigente? 🔴 Streaming · 🟡 Congreso · 🟢 Híbrido · 🔵 Rueda de prensa #EventosCorporativos",estado:"Borrador"},
-  {id:27, fecha:"19/05",dia:"Lun",red:"Instagram",   tipo:"Reel · Backstage MADBITCOIN",  copy:"Lo que no viste del MADBITCOIN CBA 🎬 Detrás de cámaras en el Círculo de Bellas Artes. #AgoraNEws #MADBITCOIN",estado:"Borrador"},
-  {id:12, fecha:"19/05",dia:"Lun",red:"LinkedIn",    tipo:"Post · Tip técnico",           copy:"¿Sabías que la posición del micrófono de solapa puede cambiar la percepción de un ponente en streaming? El audio es el 70% de la experiencia.",estado:"Borrador"},
-  {id:13, fecha:"20/05",dia:"Mar",red:"X (Twitter)", tipo:"Tweet · Backstage",            copy:"🔧 Mientras el público ve el show, nosotros estamos aquí. Sala de control activa. #StreamingPro",estado:"Borrador"},
-  {id:28, fecha:"21/05",dia:"Mié",red:"Instagram",   tipo:"Reel · Highlights MADBITCOIN", copy:"Los mejores momentos del MADBITCOIN CBA ⚡ #MADBITCOIN #AgoraNEws",estado:"Borrador"},
-  {id:14, fecha:"21/05",dia:"Mié",red:"LinkedIn",    tipo:"Post · Backstage foto",        copy:"Una imagen del montaje vale más que cualquier catálogo. Realización multicámara en Madrid. eventos@agoranews.net",estado:"Borrador"},
-  {id:15, fecha:"22/05",dia:"Jue",red:"Instagram",   tipo:"Reel · Innovación",            copy:"¿Streaming en metaverso? Ya lo hacemos. 🌐 #Metaverso #AgoraNEws",estado:"Borrador"},
-  {id:16, fecha:"23/05",dia:"Vie",red:"LinkedIn",    tipo:"Post backstage + foto",        copy:"Una imagen del montaje vale más que cualquier catálogo. ¿Cuándo es el tuyo? eventos@agoranews.net",estado:"Borrador"},
-  {id:17, fecha:"26/05",dia:"Lun",red:"X (Twitter)", tipo:"Tweet · Caso estudio",         copy:"🎯 Streaming para 1.200 espectadores con 0 cortes. Hilo 🧵👇 #RealizacionEventos #StreamingPro",estado:"Borrador"},
-  {id:18, fecha:"27/05",dia:"Mar",red:"Instagram",   tipo:"Carrusel · Recap mes",         copy:"Mayo en imágenes 📸 Todo lo que produjimos este mes. 🔥 #AgoraNEws #Eventos",estado:"Borrador"},
-  {id:19, fecha:"28/05",dia:"Mié",red:"LinkedIn",    tipo:"Carrusel · Resumen mes",       copy:"Mayo ha sido intenso. ¿Trabajamos juntos en junio? eventos@agoranews.net",estado:"Borrador"},
-  {id:20, fecha:"30/05",dia:"Vie",red:"Instagram",   tipo:"Reel · Cierre mes",            copy:"MAYO 2026 ✅ Nos vemos en junio. 🎬 #AgoraNEws #Recap",estado:"Borrador"},
+var REDES   = ["Todas","Instagram","LinkedIn","X (Twitter)"];
+var SEMANAS = ["Todas","S1 (1–7)","S2 (8–14)","S3 (15–21)","S4 (22–31)"];
+var DATA = [
+  {id:101,fecha:"01/05",dia:"Jue",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:102,fecha:"01/05",dia:"Jue",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:103,fecha:"02/05",dia:"Vie",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:104,fecha:"02/05",dia:"Vie",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:105,fecha:"05/05",dia:"Lun",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:106,fecha:"05/05",dia:"Lun",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:107,fecha:"06/05",dia:"Mar",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:108,fecha:"06/05",dia:"Mar",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:109,fecha:"07/05",dia:"Mié",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:110,fecha:"07/05",dia:"Mié",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:111,fecha:"08/05",dia:"Jue",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:112,fecha:"08/05",dia:"Jue",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:113,fecha:"09/05",dia:"Vie",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:114,fecha:"09/05",dia:"Vie",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:115,fecha:"12/05",dia:"Lun",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:116,fecha:"12/05",dia:"Lun",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:117,fecha:"13/05",dia:"Mar",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:118,fecha:"13/05",dia:"Mar",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:119,fecha:"14/05",dia:"Mié",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:120,fecha:"14/05",dia:"Mié",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:121,fecha:"15/05",dia:"Jue",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:122,fecha:"15/05",dia:"Jue",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:123,fecha:"16/05",dia:"Vie",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:124,fecha:"16/05",dia:"Vie",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:125,fecha:"19/05",dia:"Lun",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:126,fecha:"19/05",dia:"Lun",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:127,fecha:"20/05",dia:"Mar",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:128,fecha:"20/05",dia:"Mar",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:129,fecha:"21/05",dia:"Mié",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:130,fecha:"21/05",dia:"Mié",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:131,fecha:"22/05",dia:"Jue",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:132,fecha:"22/05",dia:"Jue",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:133,fecha:"23/05",dia:"Vie",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:134,fecha:"23/05",dia:"Vie",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:135,fecha:"26/05",dia:"Lun",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:136,fecha:"26/05",dia:"Lun",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:137,fecha:"27/05",dia:"Mar",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:138,fecha:"27/05",dia:"Mar",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:139,fecha:"28/05",dia:"Mié",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:140,fecha:"28/05",dia:"Mié",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"},
+  {id:141,fecha:"29/05",dia:"Jue",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:142,fecha:"29/05",dia:"Jue",red:"LinkedIn",    tipo:"",copy:"",estado:"Borrador"},
+  {id:143,fecha:"30/05",dia:"Vie",red:"Instagram",   tipo:"",copy:"",estado:"Borrador"},
+  {id:144,fecha:"30/05",dia:"Vie",red:"X (Twitter)", tipo:"",copy:"",estado:"Borrador"}
 ];
 
-// ── Estado global
-var rows = [];
-var connected = false;
-var filterRed = "Todas";
-var filterSem = "Todas";
-var editingId = null;
-var currentUser = "";
+// Estado global
+var rows       = [];
+var connected  = false;
+var filterRed  = "Todas";
+var filterSem  = "Todas";
+var editingId  = null;
+var currentUser= "";
 var sheetsLogs = [];
 
-// ── Contador de créditos
+// ── Utilidades
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function notify(m,ms){var el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(function(){el.textContent="";},ms||3000);}}
+function save(){localStorage.setItem("agora-cal",JSON.stringify(rows));}
+function semana(f){var d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
+function normalizeRows(r){return r.map(function(x){return Object.assign({},x,{id:parseInt(x.id)});});}
+
+// ── Créditos
 function getCredits(){
   var raw=localStorage.getItem("agora-credits");
   var data=raw?JSON.parse(raw):{count:0,month:new Date().getMonth()};
-  // Resetear si cambió el mes
   if(data.month!==new Date().getMonth()){data={count:0,month:new Date().getMonth()};}
   return data;
 }
@@ -257,64 +297,57 @@ function updateCreditCounter(){
   var data=getCredits();
   var el=document.getElementById("credit-counter");
   if(!el)return;
-  var color=data.count>=40?"#e53e3e":data.count>=20?"#92600A":"#555";
-  var bg=data.count>=40?"#FEF2F2":data.count>=20?"#FEF9EC":"#f5f5f5";
-  var border=data.count>=40?"#FCA5A5":data.count>=20?"#F5D97A":"#e0e0e0";
-  el.style.color=color;el.style.background=bg;el.style.borderColor=border;
+  var color  = data.count>=40?"#e53e3e":data.count>=20?"#92600A":"#555";
+  var bg     = data.count>=40?"#FEF2F2":data.count>=20?"#FEF9EC":"#f5f5f5";
+  var border = data.count>=40?"#FCA5A5":data.count>=20?"#F5D97A":"#e0e0e0";
+  el.style.color=color; el.style.background=bg; el.style.borderColor=border;
   el.textContent="⚡ "+data.count+" créditos usados este mes";
 }
-function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function notify(m,ms){var el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(function(){el.textContent="";},ms||3000);}}
-function save(){localStorage.setItem("agora-cal",JSON.stringify(rows));}
-function semana(f){var d=parseInt(f);if(d<=7)return"S1 (1–7)";if(d<=14)return"S2 (8–14)";if(d<=21)return"S3 (15–21)";return"S4 (22–31)";}
-function normalizeRows(r){return r.map(function(x){return Object.assign({},x,{id:parseInt(x.id)});});}
 
-// ── Log
-function addLog(accion, entrada){
-  var logs = getLogs();
-  logs.push({usuario:currentUser, accion:accion, entrada:entrada, ts:Date.now()});
-  localStorage.setItem("agora-log", JSON.stringify(logs));
+// ── Log local
+function addLog(accion,entrada){
+  var logs=getLogs();
+  logs.push({usuario:currentUser,accion:accion,entrada:entrada,ts:Date.now()});
+  localStorage.setItem("agora-log",JSON.stringify(logs));
 }
 function getLogs(){
-  var raw = localStorage.getItem("agora-log");
-  var logs = raw ? JSON.parse(raw) : [];
-  var cutoff = Date.now() - 7*24*60*60*1000;
-  return logs.filter(function(l){return l.ts > cutoff;});
+  var raw=localStorage.getItem("agora-log");
+  var logs=raw?JSON.parse(raw):[];
+  var cutoff=Date.now()-7*24*60*60*1000;
+  return logs.filter(function(l){return l.ts>cutoff;});
 }
 function renderLog(){
-  var logs = sheetsLogs.length ? sheetsLogs : getLogs().reverse().map(function(l){
-    var d = new Date(l.ts);
-    var fecha = d.getDate().toString().padStart(2,"0")+"/"+(d.getMonth()+1).toString().padStart(2,"0")+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
-    return Object.assign({},l,{fecha:fecha});
+  var logs=sheetsLogs.length?sheetsLogs:getLogs().reverse().map(function(l){
+    var d=new Date(l.ts);
+    var f=d.getDate().toString().padStart(2,"0")+"/"+(d.getMonth()+1).toString().padStart(2,"0")
+         +" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+    return Object.assign({},l,{fecha:f});
   });
-  var el = document.getElementById("log-list");
+  var el=document.getElementById("log-list");
   if(!logs.length){el.innerHTML='<p style="font-size:13px;color:#aaa;text-align:center;padding:20px">No hay cambios registrados.</p>';return;}
-  var colors = {editó:"#EBF3FF",añadió:"#EDFAF3",eliminó:"#FEF2F2"};
-  el.innerHTML = logs.map(function(l){
+  var colors={editó:"#EBF3FF",añadió:"#EDFAF3",eliminó:"#FEF2F2"};
+  el.innerHTML=logs.map(function(l){
     return '<div class="log-item" style="background:'+(colors[l.accion]||"#f9f9f9")+'">'
       +'<div style="flex:1"><span style="font-size:12px;font-weight:600;color:#111">'+esc(l.usuario)+'</span>'
-      +' <span style="font-size:12px;color:#555">'+l.accion+'</span>'
+      +' <span style="font-size:12px;color:#555">'+esc(l.accion)+'</span>'
       +' <span style="font-size:12px;color:#111;font-style:italic">'+esc(l.entrada)+'</span></div>'
-      +'<span style="font-size:11px;color:#aaa;white-space:nowrap">'+esc(l.fecha)+'</span></div>';
+      +'<span style="font-size:11px;color:#aaa;white-space:nowrap">'+esc(String(l.fecha))+'</span></div>';
   }).join("");
 }
 
 // ── Modales
-function openModal(id){
-  if(id==="log-modal") renderLog();
-  document.getElementById(id).style.display="flex";
-}
+function openModal(id){if(id==="log-modal")renderLog();document.getElementById(id).style.display="flex";}
 function closeModal(id){document.getElementById(id).style.display="none";}
 function toggleSetup(){var p=document.getElementById("setup-panel");p.style.display=p.style.display==="none"?"block":"none";}
 
 // ── Login
 function login(){
-  var usr = document.getElementById("usr-input").value.trim();
-  var pwd = document.getElementById("pwd-input").value;
-  var err = document.getElementById("pwd-err");
+  var usr=document.getElementById("usr-input").value.trim();
+  var pwd=document.getElementById("pwd-input").value;
+  var err=document.getElementById("pwd-err");
   if(!usr){err.textContent="Por favor introduce tu nombre.";return;}
   if(pwd===PWD){
-    currentUser = usr;
+    currentUser=usr;
     sessionStorage.setItem("ok","1");
     sessionStorage.setItem("usr",usr);
     document.getElementById("login-screen").style.display="none";
@@ -329,14 +362,15 @@ function login(){
 
 // ── Arranque
 function start(){
-  var s = localStorage.getItem("agora-cal");
-  rows = s ? normalizeRows(JSON.parse(s)) : normalizeRows(DATA.slice());
-  connected = true;
+  var s=localStorage.getItem("agora-cal");
+  rows=s?normalizeRows(JSON.parse(s)):normalizeRows(DATA.slice());
+  connected=true;
   document.getElementById("btn-connect").textContent="✅ Sheets conectado";
   document.getElementById("btn-connect").className="btn btn-success";
   document.getElementById("btn-sync").style.display="inline-block";
+  updateCreditCounter();
   render();
-  notify("📋 Datos cargados · pulsa Sync para actualizar");
+  notify("📋 Datos cargados · pulsa Sync para actualizar desde Sheets");
 }
 
 // ── Filtros y stats
@@ -349,7 +383,8 @@ function buildFilters(){
   }).join("");
 }
 function updateStats(){
-  var t=rows.length,p=rows.filter(function(r){return r.estado==="Publicado";}).length,
+  var t=rows.length,
+      p=rows.filter(function(r){return r.estado==="Publicado";}).length,
       l=rows.filter(function(r){return r.estado==="Listo";}).length,
       b=rows.filter(function(r){return r.estado==="Borrador";}).length;
   document.getElementById("s-total").textContent=t+" entradas";
@@ -360,21 +395,22 @@ function updateStats(){
 
 // ── Render tabla
 function render(){
-  buildFilters(); updateStats();
+  buildFilters();updateStats();
   var filtered=rows.filter(function(r){
     return (filterRed==="Todas"||r.red===filterRed)&&(filterSem==="Todas"||semana(r.fecha.split("/")[0])===filterSem);
   });
   var tb=document.getElementById("tbody");
-  if(!filtered.length){tb.innerHTML='<div class="empty">Sin entradas.</div>';return;}
+  if(!filtered.length){tb.innerHTML='<div class="empty">Sin entradas para los filtros seleccionados.</div>';return;}
   tb.innerHTML=filtered.map(function(r){
     var rc=RC[r.red]||{color:"#888",bg:"#eee",icon:"?"};
     var ec=EC[r.estado]||EC.Borrador;
     return '<div class="row"><div class="rmain">'
-      +'<div><div class="fd">'+r.fecha+'</div><div class="fw">'+r.dia+'</div></div>'
-      +'<div class="rcell"><span class="rbadge" style="background:'+rc.bg+';color:'+rc.color+';border-color:'+rc.color+'44">'+rc.icon+'</span><span class="rname">'+r.red+'</span></div>'
+      +'<div><div class="fd">'+esc(r.fecha)+'</div><div class="fw">'+esc(r.dia)+'</div></div>'
+      +'<div class="rcell"><span class="rbadge" style="background:'+rc.bg+';color:'+rc.color+';border-color:'+rc.color+'44">'+rc.icon+'</span>'
+      +'<span class="rname">'+esc(r.red)+'</span></div>'
       +'<div class="tipo">'+esc(r.tipo)+'</div>'
       +'<div class="cprev">'+esc(r.copy)+'</div>'
-      +'<span class="ebadge" style="background:'+ec.bg+';color:'+ec.color+';border-color:'+ec.border+'">'+r.estado+'</span>'
+      +'<span class="ebadge" style="background:'+ec.bg+';color:'+ec.color+';border-color:'+ec.border+'">'+esc(r.estado)+'</span>'
       +'<div class="row-actions">'
       +'<button class="editbtn" onclick="editRow('+r.id+')">✏️</button>'
       +'<button class="delbtn" onclick="delRow('+r.id+')">✕</button>'
@@ -400,14 +436,16 @@ function saveEdit(){
   var fecha=document.getElementById("ed-fecha").value.trim();
   var tipo=document.getElementById("ed-tipo").value.trim();
   var copy=document.getElementById("ed-copy").value.trim();
-  if(!fecha||!tipo||!copy){document.getElementById("edit-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
-  r.fecha=fecha;r.dia=document.getElementById("ed-dia").value.trim();
-  r.red=document.getElementById("ed-red").value;r.tipo=tipo;r.copy=copy;
+  if(!fecha){document.getElementById("edit-err").textContent="La fecha es obligatoria.";return;}
+  r.fecha=fecha;
+  r.dia=document.getElementById("ed-dia").value.trim();
+  r.red=document.getElementById("ed-red").value;
+  r.tipo=tipo;r.copy=copy;
   r.estado=document.getElementById("ed-estado").value;
   rows.sort(function(a,b){return a.fecha.localeCompare(b.fecha);});
-  addLog("editó", r.fecha+" · "+r.red+" · "+r.tipo);
+  addLog("editó",r.fecha+" · "+r.red+(r.tipo?" · "+r.tipo:""));
   save();closeModal("edit-modal");render();
-  if(connected) push(r, {usuario:currentUser,accion:"editó",entrada:r.fecha+" · "+r.red+" · "+r.tipo});
+  if(connected) push(r,{usuario:currentUser,accion:"editó",entrada:r.fecha+" · "+r.red+(r.tipo?" · "+r.tipo:"")});
 }
 
 // ── Eliminar
@@ -415,11 +453,11 @@ function delRow(id){
   if(!confirm("¿Eliminar esta entrada?"))return;
   var r=rows.find(function(x){return x.id===id;});
   rows=rows.filter(function(x){return x.id!==id;});
-  if(r) addLog("eliminó", r.fecha+" · "+r.red+" · "+r.tipo);
+  if(r) addLog("eliminó",r.fecha+" · "+r.red+(r.tipo?" · "+r.tipo:""));
   save();render();
   if(connected&&r){
     fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({action:"delete",id:id,log:{usuario:currentUser,accion:"eliminó",entrada:r.fecha+" · "+r.red+" · "+r.tipo}})
+      body:JSON.stringify({action:"delete",id:id,log:{usuario:currentUser,accion:"eliminó",entrada:r.fecha+" · "+r.red+(r.tipo?" · "+r.tipo:"")}})
     }).then(function(){notify("🗑️ Eliminado");addCredit();}).catch(function(){});
   }
 }
@@ -427,21 +465,25 @@ function delRow(id){
 // ── Nueva entrada
 function addRow(){
   var fecha=document.getElementById("nw-fecha").value.trim();
-  var tipo=document.getElementById("nw-tipo").value.trim();
-  var copy=document.getElementById("nw-copy").value.trim();
-  if(!fecha||!tipo||!copy){document.getElementById("new-err").textContent="Fecha, tipo y copy son obligatorios.";return;}
-  var nr={id:Date.now(),fecha:fecha,dia:document.getElementById("nw-dia").value.trim(),
-    red:document.getElementById("nw-red").value,tipo:tipo,copy:copy,
-    estado:document.getElementById("nw-estado").value};
-  addLog("añadió", nr.fecha+" · "+nr.red+" · "+nr.tipo);
+  if(!fecha){document.getElementById("new-err").textContent="La fecha es obligatoria.";return;}
+  var nr={
+    id:Date.now(),
+    fecha:fecha,
+    dia:document.getElementById("nw-dia").value.trim(),
+    red:document.getElementById("nw-red").value,
+    tipo:document.getElementById("nw-tipo").value.trim(),
+    copy:document.getElementById("nw-copy").value.trim(),
+    estado:document.getElementById("nw-estado").value
+  };
+  addLog("añadió",nr.fecha+" · "+nr.red+(nr.tipo?" · "+nr.tipo:""));
   rows.push(nr);rows.sort(function(a,b){return a.fecha.localeCompare(b.fecha);});
   save();closeModal("new-modal");render();
-  if(connected) push(nr, {usuario:currentUser,accion:"añadió",entrada:nr.fecha+" · "+nr.red+" · "+nr.tipo});
+  if(connected) push(nr,{usuario:currentUser,accion:"añadió",entrada:nr.fecha+" · "+nr.red+(nr.tipo?" · "+nr.tipo:"")});
   ["nw-fecha","nw-dia","nw-tipo","nw-copy"].forEach(function(id){document.getElementById(id).value="";});
 }
 
 // ── Push a Sheets
-function push(row, log){
+function push(row,log){
   var body={action:"upsert",row:row};
   if(log) body.log=log;
   fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
@@ -457,9 +499,11 @@ function syncSheets(){
     .then(function(d){
       if(d.ok&&d.rows&&d.rows.length){
         rows=normalizeRows(d.rows);save();render();
-        if(d.logs) sheetsLogs=d.logs;
+        if(d.logs&&d.logs.length) sheetsLogs=d.logs;
         notify("✅ Sincronizado con Sheets");addCredit();
-      } else notify("⚠️ Sin datos en Sheets");
+      } else {
+        notify("⚠️ Sin datos en Sheets");
+      }
     })
     .catch(function(e){notify("❌ Error: "+e.message);})
     .finally(function(){document.getElementById("btn-sync").textContent="↻ Sync";});
@@ -478,23 +522,24 @@ function doConnect(){
       document.getElementById("btn-connect").className="btn btn-success";
       document.getElementById("btn-sync").style.display="inline-block";
       if(d.ok&&d.rows&&d.rows.length){
-        rows=normalizeRows(d.rows);save();render();notify("✅ Conectado");
+        rows=normalizeRows(d.rows);save();render();
+        if(d.logs&&d.logs.length) sheetsLogs=d.logs;
+        notify("✅ Conectado · datos cargados desde Sheets");addCredit();
       } else {
         fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},
           body:JSON.stringify({action:"seed",rows:rows})
-        }).then(function(){notify("✅ Datos volcados a Sheets");});
+        }).then(function(){notify("✅ Datos volcados a Sheets");addCredit();});
       }
     })
     .catch(function(e){err.textContent="Error: "+e.message;});
 }
 
-// ── Inicio
+// ── Inicio automático si ya hay sesión
 if(sessionStorage.getItem("ok")==="1"){
   currentUser=sessionStorage.getItem("usr")||"Usuario";
   document.getElementById("login-screen").style.display="none";
   document.getElementById("app").style.display="block";
   start();
-  updateCreditCounter();
 }
 </script>
 </body>
