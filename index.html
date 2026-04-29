@@ -94,6 +94,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
     <div class="hbtns">
       <span class="sync-msg" id="sync-msg"></span>
+      <span id="credit-counter" style="font-size:12px;color:#888;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:20px;padding:4px 12px">⚡ 0 créditos usados este mes</span>
       <button class="btn" id="btn-sync" style="display:none" onclick="syncSheets()">↻ Sync</button>
       <button class="btn" onclick="openModal('new-modal')">+ Nueva entrada</button>
       <button class="btn" onclick="openModal('log-modal')">📋 Historial</button>
@@ -161,9 +162,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
   </div>
 
-  <div style="background:#FEF9EC;border:1px solid #F5D97A;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:#92600A;line-height:1.7">
-    <strong>💡 Cómo ahorrar créditos al usar el calendario</strong><br>
-    Cada vez que guardas un cambio se consume <strong>1 crédito</strong> de sincronización con Google Sheets (límite: 100/mes). Para minimizar el consumo, si necesitas editar varios campos de una entrada (copy, fecha, estado…) <strong>hazlo todo de una vez antes de pulsar "Guardar cambios"</strong>, en lugar de guardar tras cada pequeña modificación.
+  <div style="background:#FEF9EC;border:1px solid #F5D97A;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:#92600A;line-height:1.8">
+    <strong>💡 Cómo usar el calendario correctamente</strong><br>
+    • <strong>Al entrar</strong>, pulsa siempre <strong>↻ Sync</strong> para cargar los últimos cambios de Google Sheets antes de empezar a trabajar.<br>
+    • <strong>Al editar</strong>, si necesitas modificar varios campos de una entrada hazlo todo de una vez antes de pulsar "Guardar cambios". Cada guardado consume <strong>1 crédito</strong> de sincronización (límite: 100/mes).<br>
+    • <strong>⚠️ Sin créditos disponibles</strong>, los cambios solo se guardan en tu navegador y no llegarán a Google Sheets ni serán visibles para el resto del equipo. En ese caso, edita directamente en Google Sheets hasta que los créditos se renueven el 1 de cada mes.
   </div>
 
   <div class="filters" id="filter-red"></div>
@@ -236,7 +239,30 @@ var editingId = null;
 var currentUser = "";
 var sheetsLogs = [];
 
-// ── Utilidades
+// ── Contador de créditos
+function getCredits(){
+  var raw=localStorage.getItem("agora-credits");
+  var data=raw?JSON.parse(raw):{count:0,month:new Date().getMonth()};
+  // Resetear si cambió el mes
+  if(data.month!==new Date().getMonth()){data={count:0,month:new Date().getMonth()};}
+  return data;
+}
+function addCredit(){
+  var data=getCredits();
+  data.count++;
+  localStorage.setItem("agora-credits",JSON.stringify(data));
+  updateCreditCounter();
+}
+function updateCreditCounter(){
+  var data=getCredits();
+  var el=document.getElementById("credit-counter");
+  if(!el)return;
+  var color=data.count>=40?"#e53e3e":data.count>=20?"#92600A":"#555";
+  var bg=data.count>=40?"#FEF2F2":data.count>=20?"#FEF9EC":"#f5f5f5";
+  var border=data.count>=40?"#FCA5A5":data.count>=20?"#F5D97A":"#e0e0e0";
+  el.style.color=color;el.style.background=bg;el.style.borderColor=border;
+  el.textContent="⚡ "+data.count+" créditos usados este mes";
+}
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function notify(m,ms){var el=document.getElementById("sync-msg");if(el){el.textContent=m;setTimeout(function(){el.textContent="";},ms||3000);}}
 function save(){localStorage.setItem("agora-cal",JSON.stringify(rows));}
@@ -394,7 +420,7 @@ function delRow(id){
   if(connected&&r){
     fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({action:"delete",id:id,log:{usuario:currentUser,accion:"eliminó",entrada:r.fecha+" · "+r.red+" · "+r.tipo}})
-    }).then(function(){notify("🗑️ Eliminado");}).catch(function(){});
+    }).then(function(){notify("🗑️ Eliminado");addCredit();}).catch(function(){});
   }
 }
 
@@ -419,7 +445,7 @@ function push(row, log){
   var body={action:"upsert",row:row};
   if(log) body.log=log;
   fetch(PROXY,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
-    .then(function(){notify("☁️ Guardado en Sheets");})
+    .then(function(){notify("☁️ Guardado en Sheets");addCredit();})
     .catch(function(){notify("⚠️ Solo guardado en local");});
 }
 
@@ -432,7 +458,7 @@ function syncSheets(){
       if(d.ok&&d.rows&&d.rows.length){
         rows=normalizeRows(d.rows);save();render();
         if(d.logs) sheetsLogs=d.logs;
-        notify("✅ Sincronizado con Sheets");
+        notify("✅ Sincronizado con Sheets");addCredit();
       } else notify("⚠️ Sin datos en Sheets");
     })
     .catch(function(e){notify("❌ Error: "+e.message);})
@@ -468,6 +494,7 @@ if(sessionStorage.getItem("ok")==="1"){
   document.getElementById("login-screen").style.display="none";
   document.getElementById("app").style.display="block";
   start();
+  updateCreditCounter();
 }
 </script>
 </body>
